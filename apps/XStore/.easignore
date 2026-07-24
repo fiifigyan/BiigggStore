@@ -42,3 +42,6 @@ yarn-error.*
 
 # Environment files
 .env
+
+# Keep private config out of git, but allow EAS upload
+!google-services.json
