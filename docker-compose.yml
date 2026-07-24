@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: biigggstore_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: biigggstore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - biigggstore_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: biigggstore_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - biigggstore_network
+
+  xback:
+    image: node:20-alpine
+    container_name: biigggstore_xback
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      PORT: 9000
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/biigggstore
+      JWT_SECRET: 95610da66484b27518449019483bf1c933b0382153d10046fd125ada4fdc6b278258da04364acbf9f0d1b73357d8639d09bfd8e8014ef6652ddf1130e69fe3c7
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:8081,http://192.168.8.119:8081,exp://192.168.8.119:8081
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./apps/XBack:/app
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - biigggstore_network
+
+volumes:
+  postgres_data:
+
+networks:
+  biigggstore_network:
+    driver: bridge
