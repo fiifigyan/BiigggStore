@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "XStore",
+    "slug": "XStore",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icons/adaptive-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biigggx.xstore",
+      "icon": {
+        "dark": "./assets/icons/iOS-Dark.png",
+        "light": "./assets/icons/iOS-Light.png",
+        "tinted": "./assets/icons/iOS-Tinted.png",
+        "supportsHighResolution": true
+      },
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "monochromeImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.biigggx.xstore",
+      "googleServicesFile": "./google-services.json",  
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "INTERNET"
+      ],
+      "usesCleartextTraffic": true
+    },
+    "web": {
+      "favicon": "./assets/icons/adaptive-icon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icons/splash-icon-dark.png",
+          "imageWidth": 200,
+          "imageHeight": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/icons/splash-icon-light.png",
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fd13a3d9-b171-4b22-ac5e-bca9cbead120"
+      }
+    },
+    "owner": "biigggx"
+  }
+}
