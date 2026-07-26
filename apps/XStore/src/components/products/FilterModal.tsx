@@ -25,10 +25,10 @@ interface FilterModalProps {
 }
 
 const sortOptions = [
-  { id: 'created_at:desc', label: 'Newest First' },
-  { id: 'created_at:asc', label: 'Oldest First' },
-  { id: 'price:asc', label: 'Price: Low to High' },
-  { id: 'price:desc', label: 'Price: High to Low' },
+  { id: 'created_at:desc', label: 'Newest first' },
+  { id: 'created_at:asc', label: 'Oldest first' },
+  { id: 'price:asc', label: 'Price: low to high' },
+  { id: 'price:desc', label: 'Price: high to low' },
 ];
 
 export const FilterModal: React.FC<FilterModalProps> = ({
@@ -55,25 +55,19 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={[styles.container, { paddingBottom: insets.bottom }]}>
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Filters</Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={20} color="#999" />
+              <Ionicons name="close" size={20} color="#64748b" />
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.content}>
-            {/* Sort */}
+          <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Sort By</Text>
+              <Text style={styles.sectionTitle}>Sort by</Text>
               {sortOptions.map((option) => (
                 <TouchableOpacity
                   key={option.id}
@@ -88,14 +82,13 @@ export const FilterModal: React.FC<FilterModalProps> = ({
               ))}
             </View>
 
-            {/* Price Range */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Price Range</Text>
+              <Text style={styles.sectionTitle}>Price range</Text>
               <View style={styles.priceContainer}>
                 <TextInput
                   style={styles.priceInput}
                   placeholder="Min"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#94a3b8"
                   value={filters.minPrice}
                   onChangeText={(text) => setFilters({ ...filters, minPrice: text })}
                   keyboardType="numeric"
@@ -104,7 +97,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
                 <TextInput
                   style={styles.priceInput}
                   placeholder="Max"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#94a3b8"
                   value={filters.maxPrice}
                   onChangeText={(text) => setFilters({ ...filters, maxPrice: text })}
                   keyboardType="numeric"
@@ -118,7 +111,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
               <Text style={styles.resetButtonText}>Reset</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-              <Text style={styles.applyButtonText}>Apply Filters</Text>
+              <Text style={styles.applyButtonText}>Apply filters</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -130,13 +123,13 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
     justifyContent: 'flex-end',
   },
   container: {
     backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: '80%',
   },
   header: {
@@ -146,42 +139,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#e2e8f0',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  closeButton: {
-    fontSize: 20,
-    color: '#999',
-    padding: 4,
+    fontWeight: '700',
+    color: '#111827',
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
+  },
+  contentContainer: {
+    paddingTop: 16,
+    paddingBottom: 20,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 10,
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   radioCircle: {
     width: 20,
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ddd',
-    marginRight: 12,
+    borderColor: '#cbd5e1',
+    marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -189,11 +181,11 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4f46e5',
   },
   optionLabel: {
-    fontSize: 15,
-    color: '#333',
+    fontSize: 14,
+    color: '#334155',
   },
   priceContainer: {
     flexDirection: 'row',
@@ -202,46 +194,49 @@ const styles = StyleSheet.create({
   priceInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
     padding: 12,
-    fontSize: 16,
+    fontSize: 15,
+    color: '#0f172a',
+    backgroundColor: '#f8fafc',
   },
   priceSeparator: {
-    marginHorizontal: 12,
-    color: '#999',
-    fontSize: 16,
+    marginHorizontal: 10,
+    color: '#64748b',
+    fontSize: 15,
   },
   footer: {
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: '#e2e8f0',
     gap: 12,
   },
   resetButton: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#e2e8f0',
     alignItems: 'center',
   },
   resetButtonText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 15,
+    color: '#64748b',
+    fontWeight: '600',
   },
   applyButton: {
     flex: 2,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4f46e5',
     alignItems: 'center',
   },
   applyButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#fff',
   },
 });

@@ -11,7 +11,10 @@ export const productApi = {
     maxPrice?: number;
     search?: string;
     sort?: string;
+    order?: string;
     isFeatured?: boolean;
+    is_featured?: boolean;
+    q?: string;
   }) => {
     const { data } = await apiClient.get(API_CONFIG.products.base, { params });
     return data;

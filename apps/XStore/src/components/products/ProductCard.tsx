@@ -13,7 +13,7 @@ import { formatCurrencyShort } from '../../utils/currency';
 import { useWishlistStore } from '../../store/slices/wishlist.slice';
 
 const { width } = Dimensions.get('window');
-const cardWidth = (width - 45) / 2;
+const cardWidth = (width - 56) / 2;
 
 interface ProductCardProps {
   product: {
@@ -47,14 +47,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.9}>
       <View style={styles.imageContainer}>
         <Image source={{ uri: imageUrl }} style={styles.image} />
         <TouchableOpacity style={styles.wishlistButton} onPress={toggleWishlist}>
           <Ionicons
             name={isWishlisted ? 'heart' : 'heart-outline'}
-            size={18}
-            color={isWishlisted ? '#ff3b30' : '#666'}
+            size={16}
+            color={isWishlisted ? '#ff3b30' : '#64748b'}
           />
         </TouchableOpacity>
       </View>
@@ -71,20 +71,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
 const styles = StyleSheet.create({
   container: {
     width: cardWidth,
-    marginHorizontal: 5,
-    marginBottom: 15,
+    marginRight: 12,
+    marginBottom: 10,
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
   },
   imageContainer: {
     position: 'relative',
     height: cardWidth,
+    backgroundColor: '#f8fafc',
   },
   image: {
     width: '100%',
@@ -95,24 +98,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 20,
     padding: 6,
   },
-  wishlistIcon: {
-    fontSize: 18,
-  },
   infoContainer: {
-    padding: 10,
+    padding: 12,
   },
   title: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 4,
+    fontSize: 13,
+    color: '#334155',
+    marginBottom: 6,
+    lineHeight: 18,
   },
   price: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#4f46e5',
   },
 });

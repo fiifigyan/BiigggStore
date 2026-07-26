@@ -5,11 +5,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 interface CategoryCardProps {
   category: {
@@ -28,23 +25,14 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[
-        styles.container,
-        isSelected && styles.selectedContainer,
-      ]}
+      style={[styles.container, isSelected && styles.selectedContainer]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
     >
       <View style={[styles.iconContainer, isSelected && styles.selectedIconContainer]}>
-        <Ionicons
-          name={category.icon as any}
-          size={24}
-          color={isSelected ? '#007AFF' : '#666'}
-        />
+        <Ionicons name={category.icon as any} size={18} color={isSelected ? '#4f46e5' : '#64748b'} />
       </View>
-      <Text style={[styles.name, isSelected && styles.selectedName]}>
-        {category.name}
-      </Text>
+      <Text style={[styles.name, isSelected && styles.selectedName]}>{category.name}</Text>
     </TouchableOpacity>
   );
 };
@@ -52,36 +40,37 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginRight: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    marginRight: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#fff',
+    minWidth: 84,
   },
   selectedContainer: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#007AFF',
+    backgroundColor: '#eef2ff',
+    borderColor: '#c7d2fe',
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#f5f5f5',
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: '#f8fafc',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 6,
   },
   selectedIconContainer: {
-    backgroundColor: '#007AFF15',
-  },
-  icon: {
-    fontSize: 24,
+    backgroundColor: '#e0e7ff',
   },
   name: {
     fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
+    color: '#64748b',
+    fontWeight: '600',
   },
   selectedName: {
-    color: '#007AFF',
-    fontWeight: '600',
+    color: '#4f46e5',
   },
 });
