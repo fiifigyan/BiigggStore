@@ -12,8 +12,7 @@
       "icon": {
         "dark": "./assets/icons/iOS-Dark.png",
         "light": "./assets/icons/iOS-Light.png",
-        "tinted": "./assets/icons/iOS-Tinted.png",
-        "supportsHighResolution": true
+        "tinted": "./assets/icons/iOS-Tinted.png"
       },
       "infoPlist": {
         "NSAppTransportSecurity": {
@@ -27,14 +26,12 @@
         "monochromeImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.biigggx.xstore",
-      "googleServicesFile": "./google-services.json",  
+      "googleServicesFile": "./google-services.json",
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "INTERNET"
-      ],
-      "usesCleartextTraffic": true
+      ]
     },
     "web": {
       "favicon": "./assets/icons/adaptive-icon.png"
@@ -54,7 +51,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-image"
     ],
     "extra": {
       "eas": {

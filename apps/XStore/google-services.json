@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "479783578657",
+    "project_id": "xstore-dd15d",
+    "storage_bucket": "xstore-dd15d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479783578657:android:3cb5ecb6a84f1144f04760",
+        "android_client_info": {
+          "package_name": "com.biigggx.xstore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQy_mPmdz_ILyTx0EM-1p_YmNpqyikHCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

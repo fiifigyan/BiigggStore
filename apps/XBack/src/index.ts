@@ -62,15 +62,6 @@ const isAllowedOrigin = (origin: string | undefined): boolean => {
   );
 };
 
-app.options('*', cors({
-  origin: (origin, callback) => {
-    callback(null, isAllowedOrigin(origin));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
-
 app.use(cors({
   origin: (origin, callback) => {
     callback(null, isAllowedOrigin(origin));
