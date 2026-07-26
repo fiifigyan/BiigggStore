@@ -24,6 +24,8 @@ export const ProfileScreen = ({ navigation }: any) => {
   const { data: orders } = useOrders();
   const { notifications = [] } = useNotifications();
   const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const orderList = Array.isArray(orders) ? orders : [];
+  const totalSpent = orderList.reduce((sum, order) => sum + (order?.total ?? 0), 0);
 
   const handleLogout = () => {
     Alert.alert(
@@ -49,7 +51,7 @@ export const ProfileScreen = ({ navigation }: any) => {
     {
       icon: 'bag-outline',
       title: 'My Orders',
-      subtitle: `${orders?.length || 0} orders`,
+      subtitle: `${orderList.length} orders`,
       onPress: () => navigation.navigate('Orders'),
     },
     {
@@ -104,12 +106,12 @@ export const ProfileScreen = ({ navigation }: any) => {
       {/* Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{orders?.length || 0}</Text>
+          <Text style={styles.statNumber}>{orderList.length}</Text>
           <Text style={styles.statLabel}>Orders</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{formatCurrencyShort(orders?.reduce((sum, order) => sum + order.total, 0) || 0)}</Text>
+          <Text style={styles.statNumber}>{formatCurrencyShort(totalSpent)}</Text>
           <Text style={styles.statLabel}>Spent</Text>
         </View>
         <View style={styles.statDivider} />

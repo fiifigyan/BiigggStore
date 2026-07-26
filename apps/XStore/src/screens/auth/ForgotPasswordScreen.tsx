@@ -9,11 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { authApi } from '../../api/auth';
 import { validators } from '../../utils/validators';
 
@@ -37,7 +37,11 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
     setLoading(true);
     setError('');
     try {
-      await authApi.forgotPassword(email);
+      const response = await authApi.forgotPassword(email);
+      if (response?.resetToken) {
+        navigation.navigate('ResetPassword', { token: response.resetToken });
+        return;
+      }
       setSent(true);
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to send reset link. Please try again.');
@@ -48,91 +52,95 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
 
   if (sent) {
     return (
-      <View style={[styles.container, styles.sentContainer, { paddingTop: insets.top }]}>
-        <Ionicons name="mail-outline" size={64} color="#007AFF" />
-        <Text style={styles.sentTitle}>Check Your Email</Text>
-        <Text style={styles.sentDescription}>
-          We've sent a password reset link to{' '}
-          <Text style={styles.sentEmail}>{email}</Text>
-        </Text>
-        <Text style={styles.sentHint}>
-          Didn't receive the email? Check your spam folder or{' '}
-          <TouchableOpacity onPress={handleSendResetLink}>
-            <Text style={styles.sentResend}>resend</Text>
+      <LinearGradient colors={['#f8faff', '#eef2ff']} style={styles.container}>
+        <View style={[styles.container, styles.sentContainer, { paddingTop: insets.top }]}>
+          <View style={styles.successBadge}>
+            <Ionicons name="mail-open-outline" size={36} color="#fff" />
+          </View>
+          <Text style={styles.sentTitle}>Check your inbox</Text>
+          <Text style={styles.sentDescription}>
+            We sent a reset link to{' '}
+            <Text style={styles.sentEmail}>{email}</Text>
+          </Text>
+          <Text style={styles.sentHint}>
+            Didn’t receive it? Check your spam folder or{' '}
+            <TouchableOpacity onPress={handleSendResetLink}>
+              <Text style={styles.sentResend}>resend</Text>
+            </TouchableOpacity>
+          </Text>
+          <TouchableOpacity style={styles.backToLoginButton} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.backToLoginText}>Back to login</Text>
           </TouchableOpacity>
-        </Text>
-        <TouchableOpacity
-          style={styles.backToLoginButton}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.backToLoginText}>Back to Login</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { paddingTop: insets.top }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Forgot Password?</Text>
-          <Text style={styles.subtitle}>
-            Enter your email address and we'll send you a link to reset your password
-          </Text>
-        </View>
-
-        {/* Form */}
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email Address</Text>
-            <TextInput
-              style={[styles.input, error && styles.inputError]}
-              placeholder="john@example.com"
-              placeholderTextColor="#999"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setError('');
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            {error && <Text style={styles.errorText}>{error}</Text>}
+    <LinearGradient colors={['#f8faff', '#eef2ff']} style={styles.container}>
+      <KeyboardAvoidingView
+        style={[styles.container, { paddingTop: insets.top }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          <View style={styles.heroCard}>
+            <LinearGradient colors={['#4f46e5', '#2563eb']} style={styles.heroGradient}>
+              <View style={styles.logoBadge}>
+                <Ionicons name="key-outline" size={24} color="#fff" />
+              </View>
+              <Text style={styles.title}>Reset your password</Text>
+              <Text style={styles.subtitle}>Enter the email tied to your account and we’ll send a secure recovery link.</Text>
+            </LinearGradient>
           </View>
 
-          <TouchableOpacity
-            style={[styles.resetButton, loading && styles.buttonDisabled]}
-            onPress={handleSendResetLink}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.resetButtonText}>Send Reset Link</Text>
-            )}
-          </TouchableOpacity>
+          <View style={styles.formCard}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email address</Text>
+              <View style={[styles.inputWrapper, error && styles.inputError]}>
+                <Ionicons name="mail-outline" size={18} color="#64748b" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="john@example.com"
+                  placeholderTextColor="#94a3b8"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    setError('');
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+              </View>
+              {error && <Text style={styles.errorText}>{error}</Text>}
+            </View>
 
-          <TouchableOpacity
-            style={styles.backToLogin}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.backToLoginText}>Back to Login</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TouchableOpacity
+              style={[styles.resetButton, loading && styles.buttonDisabled]}
+              onPress={handleSendResetLink}
+              disabled={loading}
+              activeOpacity={0.9}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.resetButtonText}>Send reset link</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.backToLogin} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.backToLoginText}>Back to login</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   sentContainer: {
     alignItems: 'center',
@@ -142,117 +150,153 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
-  header: {
-    marginTop: 20,
-    marginBottom: 32,
+  heroCard: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#4f46e5',
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 8,
   },
-  backButton: {
-    padding: 8,
-    marginBottom: 8,
+  heroGradient: {
+    paddingHorizontal: 22,
+    paddingTop: 24,
+    paddingBottom: 28,
   },
-  backButtonText: {
-    fontSize: 24,
-    color: '#007AFF',
+  logoBadge: {
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 14,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
-  },
-  form: {
-    flex: 1,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#fff',
     marginBottom: 6,
   },
-  input: {
+  subtitle: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.9)',
+    lineHeight: 20,
+  },
+  formCard: {
+    marginTop: 20,
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#1f2937',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 5,
+  },
+  inputContainer: {
+    marginBottom: 18,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#334155',
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    backgroundColor: '#f8f9fa',
+    borderColor: '#dbe3f0',
+    borderRadius: 14,
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 12,
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 13,
+    fontSize: 15,
+    color: '#0f172a',
   },
   inputError: {
-    borderColor: '#ff3b30',
+    borderColor: '#fb7185',
   },
   errorText: {
-    color: '#ff3b30',
+    color: '#ef4444',
     fontSize: 12,
     marginTop: 4,
   },
   resetButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: '#4f46e5',
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
   resetButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '700',
   },
   backToLogin: {
     alignItems: 'center',
+    paddingVertical: 6,
   },
   backToLoginText: {
-    fontSize: 16,
-    color: '#007AFF',
+    fontSize: 14,
+    color: '#2563eb',
     fontWeight: '600',
   },
-  sentEmoji: {
-    fontSize: 64,
-    marginBottom: 24,
+  successBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    backgroundColor: '#4f46e5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 18,
   },
   sentTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
   },
   sentDescription: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 15,
+    color: '#64748b',
     textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 24,
+    lineHeight: 22,
+    marginBottom: 10,
   },
   sentEmail: {
-    color: '#007AFF',
+    color: '#2563eb',
     fontWeight: '600',
   },
   sentHint: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 13,
+    color: '#64748b',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   sentResend: {
-    color: '#007AFF',
+    color: '#2563eb',
     fontWeight: '600',
   },
   backToLoginButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 48,
+    backgroundColor: '#4f46e5',
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
   },
 });

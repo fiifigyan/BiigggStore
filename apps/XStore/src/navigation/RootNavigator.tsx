@@ -13,15 +13,16 @@ export const RootNavigator = () => {
   const { registerTokenWithServer: registerPushToken } = usePushNotifications();
 
   useEffect(() => {
-    // On app start, check auth and register token if authenticated
     (async () => {
-      const ok = await checkAuth();
-      if (ok) {
-        try {
+      try {
+        const ok = await checkAuth();
+        if (ok) {
           await registerPushToken();
-        } catch (err) {
-          console.warn('Register push token on startup failed', err);
+        } else {
+          await registerPushToken();
         }
+      } catch (err) {
+        console.warn('Register push token on startup failed', err);
       }
     })();
   }, []);

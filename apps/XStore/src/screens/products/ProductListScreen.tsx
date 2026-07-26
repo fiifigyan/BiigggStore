@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FlashList } from '@shopify/flash-list';
+import { LinearGradient } from 'expo-linear-gradient';
 import { productApi } from '../../api/products';
 import { ProductCard } from '../../components/products/ProductCard';
 import { FilterModal } from '../../components/products/FilterModal';
@@ -71,46 +72,41 @@ export const ProductListScreen = ({ navigation }: any) => {
   if (isLoading && products.length === 0) {
     return (
       <View style={[styles.container, styles.centered, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#4f46e5" />
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Products</Text>
-        <TouchableOpacity 
-          style={styles.filterButton}
-          onPress={() => setShowFilters(true)}
-        >
-          <Ionicons name="options-outline" size={20} color="#007AFF" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search products..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={refetch}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close" size={18} color="#999" />
+      <LinearGradient colors={['#eef2ff', '#f8faff']} style={styles.headerWrap}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Products</Text>
+          <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilters(true)}>
+            <Ionicons name="options-outline" size={18} color="#4f46e5" />
           </TouchableOpacity>
-        )}
-      </View>
+        </View>
 
-      {/* Results Count */}
-      <Text style={styles.resultCount}>
-        {products.length} products found
-      </Text>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search-outline" size={18} color="#64748b" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search products..."
+            placeholderTextColor="#94a3b8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={refetch}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Ionicons name="close" size={16} color="#64748b" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </LinearGradient>
 
-      {/* Product Grid */}
+      <Text style={styles.resultCount}>{products.length} products found</Text>
+
       <FlashList
         data={products}
         renderItem={renderItem}
@@ -121,28 +117,27 @@ export const ProductListScreen = ({ navigation }: any) => {
         ListFooterComponent={
           isFetchingNextPage ? (
             <View style={styles.footerLoader}>
-              <ActivityIndicator size="small" color="#007AFF" />
+              <ActivityIndicator size="small" color="#4f46e5" />
             </View>
           ) : null
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No products found</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.resetButton}
               onPress={() => {
                 setSearchQuery('');
                 refetch();
               }}
             >
-              <Text style={styles.resetButtonText}>Clear Filters</Text>
+              <Text style={styles.resetButtonText}>Clear filters</Text>
             </TouchableOpacity>
           </View>
         }
         contentContainerStyle={styles.gridContainer}
       />
 
-      {/* Filter Modal */}
       <FilterModal
         visible={showFilters}
         onClose={() => setShowFilters(false)}
@@ -160,7 +155,10 @@ export const ProductListScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f8fafc',
+  },
+  headerWrap: {
+    paddingBottom: 14,
   },
   centered: {
     justifyContent: 'center',
@@ -171,50 +169,50 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingTop: 8,
+    paddingBottom: 12,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#111827',
   },
   filterButton: {
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 999,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: '#e2e8f0',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20,
-    marginBottom: 10,
+    marginBottom: 4,
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: '#e2e8f0',
     paddingHorizontal: 12,
+    paddingVertical: 2,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 12,
-    fontSize: 16,
-  },
-  clearButton: {
-    padding: 8,
-    color: '#999',
-    fontSize: 16,
+    paddingVertical: 10,
+    fontSize: 15,
+    color: '#0f172a',
+    marginLeft: 8,
   },
   resultCount: {
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    color: '#666',
-    fontSize: 14,
+    paddingTop: 12,
+    paddingBottom: 6,
+    color: '#64748b',
+    fontSize: 13,
   },
   gridContainer: {
-    paddingHorizontal: 10,
-    paddingBottom: 20,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
   },
   footerLoader: {
     paddingVertical: 20,
@@ -228,14 +226,14 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
-    marginBottom: 15,
+    color: '#64748b',
+    marginBottom: 12,
   },
   resetButton: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingVertical: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    backgroundColor: '#4f46e5',
+    borderRadius: 999,
   },
   resetButtonText: {
     color: '#fff',
