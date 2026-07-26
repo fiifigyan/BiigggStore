@@ -1,5 +1,5 @@
 import { hashPassword, comparePassword } from '../../utils/password';
-import { generateToken } from '../../utils/jwt';
+import { generateToken, generateRefreshToken, generateResetToken, verifyResetToken } from '../../utils/jwt';
 import { AppError } from '../../middleware/errorHandler';
 import { prisma } from '../../lib/prisma';
 
@@ -45,8 +45,20 @@ export class AuthService {
     });
 
     const token = generateToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
-    return { user, token };
+    return {
+      access_token: token,
+      refresh_token: refreshToken,
+      customer: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        avatar: user.avatar,
+      },
+    };
   }
 
   async login(email: string, password: string) {
@@ -64,9 +76,12 @@ export class AuthService {
     }
 
     const token = generateToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
     return {
-      user: {
+      access_token: token,
+      refresh_token: refreshToken,
+      customer: {
         id: user.id,
         email: user.email,
         firstName: user.firstName,
@@ -74,7 +89,6 @@ export class AuthService {
         phone: user.phone,
         avatar: user.avatar,
       },
-      token,
     };
   }
 
@@ -109,6 +123,50 @@ export class AuthService {
       throw new AppError('User not found', 404);
     }
 
-    return generateToken(user.id);
+    return {
+      access_token: generateToken(user.id),
+      refresh_token: generateRefreshToken(user.id),
+    };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return {
+        message: 'If an account with that email exists, a password reset link has been generated.',
+      };
+    }
+
+    const resetToken = generateResetToken(user.id);
+
+    return {
+      message: 'Password reset link generated successfully.',
+      resetToken,
+    };
+  }
+
+  async resetPassword(token: string, password: string) {
+    const decoded = verifyResetToken(token);
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+    });
+
+    if (!user) {
+      throw new AppError('Invalid or expired reset token', 400);
+    }
+
+    const hashedPassword = await hashPassword(password);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    return {
+      message: 'Password reset successfully.',
+    };
   }
 }

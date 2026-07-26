@@ -17,7 +17,7 @@ export const orderApi = {
     offset?: number;
   }) => {
     const { data } = await apiClient.get(API_CONFIG.orders.base, { params });
-    return data;
+    return data.orders ?? [];
   },
 
   // Get single order

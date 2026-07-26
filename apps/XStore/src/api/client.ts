@@ -1,74 +1,11 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import Constants from 'expo-constants';
 import { API_CONFIG } from '../config/api.config';
 
-// Resolve base URL for device testing: prefer the Expo dev-server host and
-// fall back to a few common local network addresses so physical devices can
-// reach the backend across different Wi-Fi setups.
-const resolveCandidateBaseUrls = (): string[] => {
-  const configuredBase = (API_CONFIG.baseUrl || 'http://localhost:9000').trim();
-  const candidates = new Set<string>();
-
-  const addCandidate = (value?: string | null) => {
-    if (!value) return;
-    const normalized = value.trim().replace(/\/$/, '');
-    if (!normalized) return;
-    candidates.add(normalized);
-  };
-
-  const resolveHostFromExpo = (): string | null => {
-    try {
-      const candidates = [
-        (Constants as any)?.expoConfig?.hostUri,
-        (Constants as any)?.manifest?.hostUri,
-        (Constants as any)?.manifest?.debuggerHost,
-        (Constants as any)?.manifest2?.extra?.expoGo?.debuggerHost,
-        (Constants as any)?.expoConfig?.extra?.expoGo?.debuggerHost,
-      ];
-
-      for (const candidate of candidates) {
-        if (typeof candidate === 'string' && candidate) {
-          const host = candidate.split(':')[0];
-          if (host && host !== 'localhost' && host !== '127.0.0.1') {
-            return host;
-          }
-        }
-      }
-    } catch (e) {
-      // ignore and keep original
-    }
-
-    return null;
-  };
-
-  const expoHost = resolveHostFromExpo();
-  addCandidate(configuredBase);
-  addCandidate('http://localhost:9000');
-
-  if (expoHost) {
-    addCandidate(`http://${expoHost}:9000`);
-  }
-
-  addCandidate('http://192.168.8.119:9000');
-  addCandidate('http://192.168.8.1:9000');
-  addCandidate('http://10.0.0.1:9000');
-
-  return Array.from(candidates);
-};
-
-const baseUrlCandidates = resolveCandidateBaseUrls();
-let currentBaseUrlIndex = 0;
-
-const getCurrentBaseUrl = () => baseUrlCandidates[currentBaseUrlIndex] || baseUrlCandidates[0];
-
-const setNextBaseUrl = () => {
-  currentBaseUrlIndex = (currentBaseUrlIndex + 1) % baseUrlCandidates.length;
-  return getCurrentBaseUrl();
-};
+const configuredBaseUrl = (API_CONFIG.baseUrl || 'http://localhost:9000').trim().replace(/\/$/, '');
 
 export const apiClient = axios.create({
-  baseURL: `${getCurrentBaseUrl()}/api`,
+  baseURL: `${configuredBaseUrl}/api`,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
@@ -95,7 +32,7 @@ apiClient.interceptors.request.use(
       if (method !== 'GET' && method !== 'HEAD' && body) {
         config.headers['Content-Type'] = 'application/json';
         // Ensure data is stringified if it's an object
-        if (typeof body === 'object' && !Buffer.isBuffer(body) && !(body instanceof FormData)) {
+        if (typeof body === 'object' && !(body instanceof FormData)) {
           console.log(`[apiClient] ${method} ${config.url}`, JSON.stringify(body));
         } else {
           console.log(`[apiClient] ${method} ${config.url}`, body);
@@ -148,14 +85,6 @@ apiClient.interceptors.response.use(
       hasRequest: !!error.request,
       requestURL: `${originalRequest?.baseURL}${originalRequest?.url}`,
     });
-
-    if (isNetworkError && originalRequest && !originalRequest.__isRetry && baseUrlCandidates.length > 1) {
-      originalRequest.__isRetry = true;
-      const nextBaseUrl = setNextBaseUrl();
-      originalRequest.baseURL = `${nextBaseUrl}/api`;
-      console.log('[apiClient] Retrying request with', originalRequest.baseURL);
-      return apiClient(originalRequest);
-    }
 
     // Handle 401 Unauthorized
     if (error.response?.status === 401 && !originalRequest._retry) {

@@ -38,7 +38,7 @@ export class AuthController {
   getMe = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const user = await this.authService.getUser(req.userId!);
-      res.json({ success: true, user });
+      res.json({ success: true, customer: user });
     } catch (error) {
       next(error);
     }
@@ -46,8 +46,28 @@ export class AuthController {
 
   refreshToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const token = await this.authService.refreshToken(req.userId!);
-      res.json({ success: true, token });
+      const result = await this.authService.refreshToken(req.userId!);
+      res.json({ success: true, ...result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.body;
+      const result = await this.authService.forgotPassword(email);
+      res.json({ success: true, ...result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { token, password } = req.body;
+      const result = await this.authService.resetPassword(token, password);
+      res.json({ success: true, ...result });
     } catch (error) {
       next(error);
     }

@@ -6,37 +6,31 @@ import {
   StyleSheet,
   ScrollView as RNScrollView,
   TouchableOpacity,
-  Image,
-  FlatList,
-  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { productApi } from '../../api/products';
 import { ProductCard } from '../../components/products/ProductCard';
 import { CategoryCard } from '../../components/common/CategoryCard';
 
 const ScrollView = RNScrollView as ComponentType<any>;
-const { width } = Dimensions.get('window');
 
 export const HomeScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Fetch featured products
   const { data: featuredProducts, isLoading } = useQuery({
     queryKey: ['products', 'featured'],
     queryFn: () => productApi.getProducts({ limit: 10, is_featured: true }),
   });
 
-  // Fetch new arrivals
   const { data: newArrivals } = useQuery({
     queryKey: ['products', 'new'],
     queryFn: () => productApi.getProducts({ limit: 10, order: 'created_at:desc' }),
   });
 
-  // Categories data
   const categories = [
     { id: 'all', name: 'All', icon: 'bag-handle-outline' },
     { id: 'clothes', name: 'Clothes', icon: 'shirt-outline' },
@@ -46,44 +40,39 @@ export const HomeScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <ScrollView style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <View style={styles.greetingRow}>
-            <Text style={styles.greeting}>Welcome back!</Text>
-            <Ionicons name="hand-left-outline" size={20} color="#333" />
+    <ScrollView
+      style={[styles.container, { paddingTop: insets.top }]}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+    >
+      <LinearGradient colors={['#eef2ff', '#f8faff']} style={styles.headerWrap}>
+        <View style={styles.header}>
+          <View>
+            <View style={styles.greetingRow}>
+              <Text style={styles.greeting}>Welcome back</Text>
+              <Ionicons name="hand-left-outline" size={18} color="#4f46e5" />
+            </View>
+            <Text style={styles.subGreeting}>Find your next favorite pick</Text>
           </View>
-          <Text style={styles.subGreeting}>Find your perfect style</Text>
+          <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
+            <View style={styles.avatar}>
+              <Ionicons name="person-outline" size={20} color="#fff" />
+            </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <View style={styles.avatar}>
-            <Ionicons name="person-outline" size={20} color="#fff" />
+
+        <TouchableOpacity style={styles.searchBar} onPress={() => navigation.navigate('Search')}>
+          <View style={styles.searchBarContent}>
+            <Ionicons name="search-outline" size={18} color="#64748b" />
+            <Text style={styles.searchText}>Search for products...</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      {/* Search Bar */}
-      <TouchableOpacity 
-        style={styles.searchBar}
-        onPress={() => navigation.navigate('Search')}
-      >
-        <View style={styles.searchBarContent}>
-          <Ionicons name="search-outline" size={18} color="#999" />
-          <Text style={styles.searchText}>Search for products...</Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* Categories */}
       <View style={styles.categoriesContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesList}
-        >
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Browse by category</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesList}>
           {categories.map((item) => (
             <CategoryCard
               key={item.id}
@@ -95,33 +84,37 @@ export const HomeScreen = ({ navigation }: any) => {
         </ScrollView>
       </View>
 
-      {/* Hero Banner */}
-      <TouchableOpacity style={styles.heroBanner}>
-        <View style={styles.heroTitleRow}>
-          <Text style={styles.heroTitle}>Summer Sale</Text>
-          <Ionicons name="flame-outline" size={24} color="#fff" />
-        </View>
-        <Text style={styles.heroSubtitle}>Up to 50% off selected items</Text>
-        <Text style={styles.heroButton}>Shop Now →</Text>
+      <TouchableOpacity style={styles.heroBanner} activeOpacity={0.9}>
+        <LinearGradient
+          colors={['#4f46e5', '#2563eb']}
+          style={styles.heroGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.heroTitleRow}>
+            <Text style={styles.heroTitle}>Midnight deals</Text>
+            <Ionicons name="flame-outline" size={22} color="#fff" />
+          </View>
+          <Text style={styles.heroSubtitle}>Up to 50% off curated essentials for your next refresh.</Text>
+          <View style={styles.heroFooter}>
+            <Text style={styles.heroButton}>Shop now</Text>
+            <Ionicons name="arrow-forward-outline" size={16} color="#fff" />
+          </View>
+        </LinearGradient>
       </TouchableOpacity>
 
-      {/* Featured Products */}
       {!isLoading && featuredProducts && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>
-              <Text style={styles.sectionTitle}>Featured</Text>
-              <Ionicons name="sparkles-outline" size={18} color="#333" />
+              <Text style={styles.sectionTitle}>Featured picks</Text>
+              <Ionicons name="sparkles-outline" size={16} color="#4f46e5" />
             </View>
             <TouchableOpacity onPress={() => navigation.navigate('Products')}>
-              <Text style={styles.seeAll}>See All</Text>
+              <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.productsList}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productsList}>
             {featuredProducts.products.map((item) => (
               <ProductCard
                 key={item.id}
@@ -133,23 +126,18 @@ export const HomeScreen = ({ navigation }: any) => {
         </View>
       )}
 
-      {/* New Arrivals */}
       {newArrivals && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>
-              <Text style={styles.sectionTitle}>New Arrivals</Text>
-              <Ionicons name="sparkles-outline" size={18} color="#333" />
+              <Text style={styles.sectionTitle}>New arrivals</Text>
+              <Ionicons name="rocket-outline" size={16} color="#4f46e5" />
             </View>
             <TouchableOpacity onPress={() => navigation.navigate('Products')}>
-              <Text style={styles.seeAll}>See All</Text>
+              <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.productsList}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productsList}>
             {newArrivals.products.map((item) => (
               <ProductCard
                 key={item.id}
@@ -167,14 +155,18 @@ export const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f8fafc',
+  },
+  headerWrap: {
+    paddingBottom: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingTop: 10,
+    paddingBottom: 12,
   },
   greetingRow: {
     flexDirection: 'row',
@@ -183,36 +175,33 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#111827',
   },
   subGreeting: {
     fontSize: 14,
-    color: '#666',
+    color: '#64748b',
     marginTop: 4,
   },
   profileButton: {
-    padding: 8,
+    padding: 6,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#007AFF',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#4f46e5',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 20,
   },
   searchBar: {
     backgroundColor: '#fff',
     marginHorizontal: 20,
-    padding: 14,
-    borderRadius: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#eee',
-    marginBottom: 15,
+    borderColor: '#e2e8f0',
   },
   searchBarContent: {
     flexDirection: 'row',
@@ -220,21 +209,30 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   searchText: {
-    color: '#999',
-    fontSize: 16,
+    color: '#64748b',
+    fontSize: 15,
   },
   categoriesContainer: {
-    marginVertical: 10,
+    marginTop: 16,
+    marginBottom: 8,
   },
   categoriesList: {
     paddingHorizontal: 20,
   },
   heroBanner: {
-    backgroundColor: '#007AFF',
     marginHorizontal: 20,
-    padding: 25,
-    borderRadius: 16,
-    marginBottom: 20,
+    marginTop: 8,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#4f46e5',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  heroGradient: {
+    paddingHorizontal: 20,
+    paddingVertical: 22,
   },
   heroTitleRow: {
     flexDirection: 'row',
@@ -242,24 +240,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   heroTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '700',
     color: '#fff',
   },
   heroSubtitle: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-    marginTop: 5,
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.9)',
+    marginTop: 6,
+    lineHeight: 20,
+  },
+  heroFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 6,
   },
   heroButton: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#fff',
-    marginTop: 12,
   },
   section: {
-    marginVertical: 10,
+    marginTop: 18,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -274,13 +277,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#111827',
   },
   seeAll: {
-    fontSize: 14,
-    color: '#007AFF',
+    fontSize: 13,
+    color: '#4f46e5',
+    fontWeight: '600',
   },
   productsList: {
     paddingHorizontal: 20,

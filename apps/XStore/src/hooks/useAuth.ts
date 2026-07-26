@@ -9,6 +9,15 @@ export const useAuth = () => {
   const { user, isAuthenticated, setUser, logout: logoutStore } = useAuthStore();
   const { registerTokenWithServer: registerPushToken, unregisterTokenWithServer: unregisterPushToken } = usePushNotifications();
 
+  const normalizeUser = (userData: any) => ({
+    id: userData?.id ?? '',
+    email: userData?.email ?? '',
+    first_name: userData?.first_name ?? userData?.firstName ?? '',
+    last_name: userData?.last_name ?? userData?.lastName ?? '',
+    phone: userData?.phone ?? '',
+    avatar: userData?.avatar ?? '',
+  });
+
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
@@ -16,7 +25,7 @@ export const useAuth = () => {
     onSuccess: async (data) => {
       await SecureStore.setItemAsync('auth_token', data.access_token);
       await SecureStore.setItemAsync('refresh_token', data.refresh_token);
-      setUser(data.customer);
+      setUser(normalizeUser(data.customer || data.user));
       // register push token after login
       try {
         await registerPushToken();
@@ -31,7 +40,8 @@ export const useAuth = () => {
     mutationFn: (userData: any) => authApi.register(userData),
     onSuccess: async (data) => {
       await SecureStore.setItemAsync('auth_token', data.access_token);
-      setUser(data.customer);
+      await SecureStore.setItemAsync('refresh_token', data.refresh_token);
+      setUser(normalizeUser(data.customer || data.user));
     },
   });
 
@@ -59,7 +69,7 @@ export const useAuth = () => {
       const token = await SecureStore.getItemAsync('auth_token');
       if (token) {
         const data = await authApi.getMe();
-        setUser(data.customer);
+        setUser(normalizeUser(data.customer || data.user));
         return true;
       }
       return false;
