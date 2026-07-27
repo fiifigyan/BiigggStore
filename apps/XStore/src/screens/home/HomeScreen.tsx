@@ -1,14 +1,17 @@
 // apps/mobile/src/screens/home/HomeScreen.tsx
-import React, { useState, type ComponentType } from 'react';
+import React, { useState, useCallback, type ComponentType } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView as RNScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../../store/slices/auth.slice';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { productApi } from '../../api/products';
@@ -21,15 +24,33 @@ export const HomeScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const { data: featuredProducts, isLoading } = useQuery({
-    queryKey: ['products', 'featured'],
-    queryFn: () => productApi.getProducts({ limit: 10, is_featured: true }),
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { data: featuredProducts, isLoading: isFeaturedLoading, refetch: refetchFeatured } = useQuery({
+    queryKey: ['products', 'featured', selectedCategory],
+    queryFn: () =>
+      productApi.getProducts({
+        limit: 10,
+        is_featured: true,
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+      }),
   });
 
-  const { data: newArrivals } = useQuery({
-    queryKey: ['products', 'new'],
-    queryFn: () => productApi.getProducts({ limit: 10, order: 'created_at:desc' }),
+  const { data: newArrivals, refetch: refetchNewArrivals } = useQuery({
+    queryKey: ['products', 'new', selectedCategory],
+    queryFn: () =>
+      productApi.getProducts({
+        limit: 10,
+        order: 'created_at:desc',
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+      }),
   });
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetchFeatured(), refetchNewArrivals()]);
+    setRefreshing(false);
+  }, [refetchFeatured, refetchNewArrivals]);
 
   const categories = [
     { id: 'all', name: 'All', icon: 'bag-handle-outline' },
@@ -43,6 +64,9 @@ export const HomeScreen = ({ navigation }: any) => {
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#4f46e5" />
+      }
     >
       <LinearGradient colors={['#eef2ff', '#f8faff']} style={styles.headerWrap}>
         <View style={styles.header}>
@@ -103,7 +127,7 @@ export const HomeScreen = ({ navigation }: any) => {
         </LinearGradient>
       </TouchableOpacity>
 
-      {!isLoading && featuredProducts && (
+      {!isFeaturedLoading && featuredProducts && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>

@@ -13,7 +13,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../../store/slices/auth.slice';
 import { productApi } from '../../api/products';
+import { formatCurrencyShort } from '../../utils/currency';
 
 export const SearchScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
@@ -28,17 +31,17 @@ export const SearchScreen = ({ navigation }: any) => {
     queryKey: ['search', query],
     queryFn: () => productApi.searchProducts(query),
     enabled: query.length > 2,
+    // Global interceptor handles 401
   });
 
   const handleSearch = useCallback(() => {
     if (query.length > 2) {
       refetch();
-      // Add to search history
       if (!searchHistory.includes(query)) {
         setSearchHistory([query, ...searchHistory.slice(0, 4)]);
       }
     }
-  }, [query]);
+  }, [query, refetch, searchHistory]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -74,23 +77,30 @@ export const SearchScreen = ({ navigation }: any) => {
         ) : data?.products?.length > 0 ? (
           <FlatList
             data={data.products}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.resultItem}
-                onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
-              >
-                <Image
-                  source={{ uri: item.images?.[0]?.url || 'https://via.placeholder.com/60' }}
-                  style={styles.resultImage}
-                />
-                <View style={styles.resultInfo}>
-                  <Text style={styles.resultTitle}>{item.title}</Text>
-                  <Text style={styles.resultPrice}>
-                    ₦{(item.variants?.[0]?.prices?.[0]?.amount / 100 || 0).toFixed(2)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => {
+              const imageUrl = item.images?.[0]
+                ? typeof item.images[0] === 'string'
+                  ? item.images[0]
+                  : item.images[0]?.url
+                : 'https://via.placeholder.com/60';
+              return (
+                <TouchableOpacity
+                  style={styles.resultItem}
+                  onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+                >
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.resultImage}
+                  />
+                  <View style={styles.resultInfo}>
+                    <Text style={styles.resultTitle}>{item.title}</Text>
+                    <Text style={styles.resultPrice}>
+                      {formatCurrencyShort(item.variants?.[0]?.prices?.[0]?.amount || item.price || 0)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.resultsList}
           />

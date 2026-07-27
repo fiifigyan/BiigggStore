@@ -52,8 +52,9 @@ export const CheckoutScreen = ({ navigation }: any) => {
       
       // Show Paystack payment modal
       setShowPayment(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment initiation failed:', error);
+      // Let the global interceptor handle 401/refresh; surface other errors
       Alert.alert('Error', 'Failed to initialize payment. Please try again.');
     } finally {
       setIsLoading(false);

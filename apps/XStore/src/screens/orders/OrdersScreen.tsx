@@ -12,12 +12,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../../api/orders';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../../store/slices/auth.slice';
 
 export const OrdersScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const { data: orders, isLoading } = useQuery({
     queryKey: ['orders'],
     queryFn: () => orderApi.getOrders(),
+    // Global interceptor handles 401
   });
 
   const getStatusColor = (status: string) => {

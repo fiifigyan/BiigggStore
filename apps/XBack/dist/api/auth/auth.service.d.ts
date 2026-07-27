@@ -55,26 +55,6 @@ export declare class AuthService {
         access_token: string;
         refresh_token: string;
     }>;
-    socialLogin(provider: string, profile: {
-        email?: string;
-        firstName?: string;
-        lastName?: string;
-        avatar?: string;
-        accessToken?: string;
-        idToken?: string;
-    }): Promise<{
-        access_token: string;
-        refresh_token: string;
-        customer: {
-            id: string;
-            email: string;
-            firstName: string | null;
-            lastName: string | null;
-            phone: string | null;
-            avatar: string | null;
-        };
-        provider: string;
-    }>;
     forgotPassword(email: string): Promise<{
         message: string;
         resetToken?: undefined;

@@ -48,16 +48,6 @@ class AuthController {
                 next(error);
             }
         };
-        this.socialLogin = async (req, res, next) => {
-            try {
-                const { provider, email, firstName, lastName, avatar } = req.body;
-                const result = await this.authService.socialLogin(provider, { email, firstName, lastName, avatar });
-                res.json({ success: true, ...result });
-            }
-            catch (error) {
-                next(error);
-            }
-        };
         this.forgotPassword = async (req, res, next) => {
             try {
                 const { email } = req.body;

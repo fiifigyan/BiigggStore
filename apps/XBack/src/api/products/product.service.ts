@@ -54,9 +54,9 @@ export class ProductService {
     return {
       products,
       total: count,
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-      totalPages: Math.ceil(count / parseInt(limit)),
+      limit,
+      offset,
+      totalPages: Math.ceil(count / limit),
     };
   }
 

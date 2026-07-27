@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 
+import { prisma } from './lib/prisma';
+
 // Routes
 import authRoutes from './api/auth/auth.routes';
 import productRoutes from './api/products/product.routes';
@@ -11,6 +13,8 @@ import cartRoutes from './api/cart/cart.routes';
 import orderRoutes from './api/orders/order.routes';
 import userRoutes from './api/users/user.routes';
 import notificationRoutes from './api/notifications/notification.routes';
+import adminRoutes from './api/admin/admin.routes';
+import { adminAuth } from './middleware/admin';
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -73,6 +77,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.locals.prisma = prisma;
+
 // Health check
 app.get('/health', (_req, res) => {
   res.json({
@@ -89,6 +95,34 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
+
+// SSE endpoint for admin notifications
+app.get('/api/admin/stream', adminAuth, (req, res) => {
+  res.writeHead(200, {
+    Connection: 'keep-alive',
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+  });
+
+  const send = (payload: any) => {
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+  };
+
+  const onNotification = (payload: any) => send(payload);
+
+  // send a ping every 25s to keep connection alive
+  const ping = setInterval(() => res.write(': ping\n\n'), 25_000);
+
+  // subscribe
+  const notifier = require('./lib/notifier').notifier;
+  notifier.on('notification', onNotification);
+
+  req.on('close', () => {
+    clearInterval(ping);
+    notifier.off('notification', onNotification);
+  });
+});
 
 // 404 handler
 app.use((_req, res) => {

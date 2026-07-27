@@ -2,12 +2,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../api/orders';
 import { queryKeys } from '../query/keys';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../store/slices/auth.slice';
 
 export const useOrders = (params?: { limit?: number; offset?: number }) => {
   return useQuery({
     queryKey: queryKeys.orders.list(params),
     queryFn: () => orderApi.getOrders(params),
     staleTime: 5 * 60 * 1000,
+    // Global interceptor handles 401
   });
 };
 
@@ -17,6 +20,7 @@ export const useOrder = (orderId: string) => {
     queryFn: () => orderApi.getOrder(orderId),
     enabled: !!orderId,
     staleTime: 5 * 60 * 1000,
+    // Global interceptor handles 401
   });
 };
 
@@ -26,5 +30,6 @@ export const useOrderStatus = (orderId: string) => {
     queryFn: () => orderApi.getOrderStatus(orderId),
     enabled: !!orderId,
     refetchInterval: 30000, // Refetch every 30 seconds
+    // Global interceptor handles 401
   });
 };

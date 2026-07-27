@@ -4,12 +4,22 @@ exports.ProductService = void 0;
 const prisma_1 = require("../../lib/prisma");
 class ProductService {
     async getAll(query) {
-        const { limit = 20, offset = 0, category, subcategory, search, minPrice, maxPrice, sort = 'createdAt:desc' } = query;
+        const limit = parseInt(query.limit) || 20;
+        const offset = parseInt(query.offset) || 0;
+        const category = query.category;
+        const subcategory = query.subcategory;
+        const search = query.search || query.q;
+        const minPrice = query.minPrice ?? query.min_price;
+        const maxPrice = query.maxPrice ?? query.max_price;
+        const isFeatured = query.isFeatured ?? query.is_featured;
+        const sort = query.sort || query.order || 'createdAt:desc';
         const where = { isPublished: true };
         if (category)
             where.category = category;
         if (subcategory)
             where.subcategory = subcategory;
+        if (isFeatured !== undefined)
+            where.isFeatured = isFeatured === 'true' || isFeatured === true;
         if (search) {
             where.OR = [
                 { title: { contains: search, mode: 'insensitive' } },
@@ -18,29 +28,37 @@ class ProductService {
         }
         if (minPrice || maxPrice) {
             where.price = {};
-            if (minPrice)
+            if (minPrice !== undefined)
                 where.price.gte = parseInt(minPrice);
-            if (maxPrice)
+            if (maxPrice !== undefined)
                 where.price.lte = parseInt(maxPrice);
         }
         const [sortField, sortOrder] = sort.split(':');
+        const fieldMap = {
+            created_at: 'createdAt',
+            updated_at: 'updatedAt',
+            compare_at: 'compareAt',
+            is_published: 'isPublished',
+            is_featured: 'isFeatured',
+        };
+        const normalizedField = fieldMap[sortField] ?? sortField;
         const orderBy = {};
-        orderBy[sortField] = sortOrder || 'desc';
+        orderBy[normalizedField] = (sortOrder || 'desc');
         const [products, count] = await Promise.all([
             prisma_1.prisma.product.findMany({
                 where,
                 orderBy,
-                take: parseInt(limit),
-                skip: parseInt(offset),
+                take: limit,
+                skip: offset,
             }),
             prisma_1.prisma.product.count({ where }),
         ]);
         return {
             products,
             total: count,
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-            totalPages: Math.ceil(count / parseInt(limit)),
+            limit,
+            offset,
+            totalPages: Math.ceil(count / limit),
         };
     }
     async getById(id) {
