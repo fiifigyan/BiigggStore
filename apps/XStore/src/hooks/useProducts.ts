@@ -2,6 +2,8 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { productApi } from '../api/products';
 import { queryKeys } from '../query/keys';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../store/slices/auth.slice';
 
 export const useProducts = (filters?: any) => {
   return useInfiniteQuery({
@@ -12,6 +14,7 @@ export const useProducts = (filters?: any) => {
         offset: pageParam,
         ...filters,
       }),
+    // Let the global apiClient interceptor handle 401 and token refresh
     getNextPageParam: (lastPage) => {
       const { offset, limit, count } = lastPage;
       return offset + limit < count ? offset + limit : undefined;
@@ -27,6 +30,7 @@ export const useProduct = (id: string) => {
     queryFn: () => productApi.getProduct(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    // Global interceptor handles 401
   });
 };
 
@@ -35,6 +39,7 @@ export const useCategories = () => {
     queryKey: ['categories'],
     queryFn: () => productApi.getCategories(),
     staleTime: 60 * 60 * 1000, // 1 hour
+    // Global interceptor handles 401
   });
 };
 
@@ -44,5 +49,6 @@ export const useSearchProducts = (query: string) => {
     queryFn: () => productApi.searchProducts(query),
     enabled: query.length > 2,
     staleTime: 5 * 60 * 1000,
+    // Global interceptor handles 401
   });
 };

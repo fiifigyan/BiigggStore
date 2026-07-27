@@ -7,15 +7,17 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  RefreshControl,
+  FlatList,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { FlashList } from '@shopify/flash-list';
 import { LinearGradient } from 'expo-linear-gradient';
 import { productApi } from '../../api/products';
 import { ProductCard } from '../../components/products/ProductCard';
 import { FilterModal } from '../../components/products/FilterModal';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export const ProductListScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
@@ -28,21 +30,27 @@ export const ProductListScreen = ({ navigation }: any) => {
     sort: 'created_at:desc',
   });
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
+
   const {
     data,
     isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isRefetching,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['products', filters],
+    queryKey: ['products', filters, debouncedSearchQuery],
     queryFn: ({ pageParam = 0 }) =>
       productApi.getProducts({
         limit: 20,
         offset: pageParam,
-        ...filters,
-        q: searchQuery,
+        category: filters.category || undefined,
+        minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
+        maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
+        sort: filters.sort,
+        q: debouncedSearchQuery || undefined,
       }),
     getNextPageParam: (lastPage) => {
       const { offset, limit, count } = lastPage;
@@ -95,7 +103,7 @@ export const ProductListScreen = ({ navigation }: any) => {
             placeholderTextColor="#94a3b8"
             value={searchQuery}
             onChangeText={setSearchQuery}
-            onSubmitEditing={refetch}
+            onSubmitEditing={() => refetch()}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -107,13 +115,20 @@ export const ProductListScreen = ({ navigation }: any) => {
 
       <Text style={styles.resultCount}>{products.length} products found</Text>
 
-      <FlashList
+      <FlatList
         data={products}
         renderItem={renderItem}
-        estimatedItemSize={300}
+        keyExtractor={(item) => item.id}
         numColumns={2}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => refetch()}
+            tintColor="#4f46e5"
+          />
+        }
         ListFooterComponent={
           isFetchingNextPage ? (
             <View style={styles.footerLoader}>

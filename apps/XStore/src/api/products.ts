@@ -23,7 +23,7 @@ export const productApi = {
   // Get single product
   getProduct: async (id: string) => {
     const { data } = await apiClient.get(API_CONFIG.products.detail(id));
-    return data;
+    return data.product ?? data;
   },
 
   // Get featured products
