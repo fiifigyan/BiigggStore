@@ -4,6 +4,8 @@ import { cartApi } from '../api/cart';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import { useEffect } from 'react';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../store/slices/auth.slice';
 
 export const useCart = () => {
   const { 
@@ -27,6 +29,10 @@ export const useCart = () => {
     onSuccess: (data) => {
       setCartId(data.cart.id);
     },
+    onError: (error: any) => {
+      // Let the global apiClient interceptor handle 401/refresh logic
+      console.error('createCartMutation error:', error);
+    },
   });
 
   // Get cart query
@@ -44,18 +50,28 @@ export const useCart = () => {
       // Update local store
       // We'll sync with server state
     },
+    onError: (error: any) => {
+      // Global interceptor handles 401; surface other errors locally
+      console.error('addItemMutation error:', error);
+    },
   });
 
   // Update quantity mutation
   const updateQuantityMutation = useMutation({
     mutationFn: ({ lineItemId, quantity }: { lineItemId: string; quantity: number }) =>
       cartApi.updateItemQuantity(cartId!, lineItemId, quantity),
+    onError: (error: any) => {
+      console.error('updateQuantityMutation error:', error);
+    },
   });
 
   // Remove item mutation
   const removeItemMutation = useMutation({
     mutationFn: (lineItemId: string) =>
       cartApi.removeItem(cartId!, lineItemId),
+    onError: (error: any) => {
+      console.error('removeItemMutation error:', error);
+    },
   });
 
   // Initialize cart

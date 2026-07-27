@@ -15,6 +15,8 @@ const cart_routes_1 = __importDefault(require("./api/cart/cart.routes"));
 const order_routes_1 = __importDefault(require("./api/orders/order.routes"));
 const user_routes_1 = __importDefault(require("./api/users/user.routes"));
 const notification_routes_1 = __importDefault(require("./api/notifications/notification.routes"));
+const admin_routes_1 = __importDefault(require("./api/admin/admin.routes"));
+const admin_1 = require("./middleware/admin");
 // Middleware
 const errorHandler_1 = require("./middleware/errorHandler");
 dotenv_1.default.config();
@@ -51,14 +53,6 @@ const isAllowedOrigin = (origin) => {
         normalizedOrigin.startsWith('http://172.') ||
         normalizedOrigin.startsWith('https://172.'));
 };
-app.options('*', (0, cors_1.default)({
-    origin: (origin, callback) => {
-        callback(null, isAllowedOrigin(origin));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         callback(null, isAllowedOrigin(origin));
@@ -83,6 +77,28 @@ app.use('/api/cart', cart_routes_1.default);
 app.use('/api/orders', order_routes_1.default);
 app.use('/api/users', user_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
+app.use('/api/admin', admin_routes_1.default);
+// SSE endpoint for admin notifications
+app.get('/api/admin/stream', admin_1.adminAuth, (req, res) => {
+    res.writeHead(200, {
+        Connection: 'keep-alive',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+    });
+    const send = (payload) => {
+        res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    };
+    const onNotification = (payload) => send(payload);
+    // send a ping every 25s to keep connection alive
+    const ping = setInterval(() => res.write(': ping\n\n'), 25000);
+    // subscribe
+    const notifier = require('./lib/notifier').notifier;
+    notifier.on('notification', onNotification);
+    req.on('close', () => {
+        clearInterval(ping);
+        notifier.off('notification', onNotification);
+    });
+});
 // 404 handler
 app.use((_req, res) => {
     res.status(404).json({ message: 'Route not found' });

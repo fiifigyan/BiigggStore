@@ -12,6 +12,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatCurrencyShort } from '../../utils/currency';
 import { useWishlistStore } from '../../store/slices/wishlist.slice';
 
+const getImageUrl = (images?: Array<{ url?: string } | string>) => {
+  const image = images?.[0];
+  if (!image) return 'https://via.placeholder.com/300x300';
+  return typeof image === 'string' ? image : image?.url || 'https://via.placeholder.com/300x300';
+};
+
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 56) / 2;
 
@@ -31,7 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
   const isWishlisted = isInWishlist(product.id);
 
   const price = product.variants?.[0]?.prices?.[0]?.amount || product.price || 0;
-  const imageUrl = product.images?.[0]?.url || 'https://via.placeholder.com/300x300';
+  const imageUrl = getImageUrl(product.images);
 
   const toggleWishlist = () => {
     if (isWishlisted) {

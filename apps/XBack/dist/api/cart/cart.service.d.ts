@@ -7,15 +7,15 @@ export declare class CartService {
                 updatedAt: Date;
                 title: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
-                category: string | null;
-                subcategory: string | null;
                 description: string | null;
-                price: number;
                 compareAt: number | null;
-                images: string[];
-                stock: number;
                 isPublished: boolean;
                 isFeatured: boolean;
+                price: number;
+                images: string[];
+                category: string | null;
+                subcategory: string | null;
+                stock: number;
             };
         } & {
             id: string;
@@ -39,15 +39,15 @@ export declare class CartService {
                 updatedAt: Date;
                 title: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
-                category: string | null;
-                subcategory: string | null;
                 description: string | null;
-                price: number;
                 compareAt: number | null;
-                images: string[];
-                stock: number;
                 isPublished: boolean;
                 isFeatured: boolean;
+                price: number;
+                images: string[];
+                category: string | null;
+                subcategory: string | null;
+                stock: number;
             };
         } & {
             id: string;
@@ -71,15 +71,15 @@ export declare class CartService {
                 updatedAt: Date;
                 title: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
-                category: string | null;
-                subcategory: string | null;
                 description: string | null;
-                price: number;
                 compareAt: number | null;
-                images: string[];
-                stock: number;
                 isPublished: boolean;
                 isFeatured: boolean;
+                price: number;
+                images: string[];
+                category: string | null;
+                subcategory: string | null;
+                stock: number;
             };
         } & {
             id: string;
@@ -103,15 +103,15 @@ export declare class CartService {
                 updatedAt: Date;
                 title: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
-                category: string | null;
-                subcategory: string | null;
                 description: string | null;
-                price: number;
                 compareAt: number | null;
-                images: string[];
-                stock: number;
                 isPublished: boolean;
                 isFeatured: boolean;
+                price: number;
+                images: string[];
+                category: string | null;
+                subcategory: string | null;
+                stock: number;
             };
         } & {
             id: string;
@@ -135,15 +135,15 @@ export declare class CartService {
                 updatedAt: Date;
                 title: string;
                 metadata: import("@prisma/client/runtime/library").JsonValue | null;
-                category: string | null;
-                subcategory: string | null;
                 description: string | null;
-                price: number;
                 compareAt: number | null;
-                images: string[];
-                stock: number;
                 isPublished: boolean;
                 isFeatured: boolean;
+                price: number;
+                images: string[];
+                category: string | null;
+                subcategory: string | null;
+                stock: number;
             };
         } & {
             id: string;

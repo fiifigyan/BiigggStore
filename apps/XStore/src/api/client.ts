@@ -1,5 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../store/slices/auth.slice';
 import { API_CONFIG } from '../config/api.config';
 
 const configuredBaseUrl = (API_CONFIG.baseUrl || 'http://localhost:9000').trim().replace(/\/$/, '');
@@ -107,8 +109,18 @@ apiClient.interceptors.response.use(
         // Refresh failed - logout
         await SecureStore.deleteItemAsync('auth_token');
         await SecureStore.deleteItemAsync('refresh_token');
-        // Redirect to login
-        // We'll handle this in the app state
+        // Clear auth state so app can react and navigate to login
+        try {
+          useAuthStore.getState().logout();
+        } catch (e) {
+          console.error('Failed to clear auth store after refresh failure', e);
+        }
+        // Notify user
+        try {
+          Alert.alert('Session expired', 'Please login again to continue.');
+        } catch (e) {
+          // Ignore UI errors in non-UI contexts
+        }
       }
     }
 

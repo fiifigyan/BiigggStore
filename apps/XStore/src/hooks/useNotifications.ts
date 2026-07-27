@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationApi } from '../api/notifications';
 import { queryKeys } from '../query/keys';
+import { Alert } from 'react-native';
+import { useAuthStore } from '../store/slices/auth.slice';
 
 export const useNotifications = () => {
   const queryClient = useQueryClient();
@@ -8,6 +10,7 @@ export const useNotifications = () => {
   const notificationsQuery = useQuery({
     queryKey: queryKeys.notifications.list(),
     queryFn: notificationApi.getNotifications,
+    // Global interceptor handles 401
   });
 
   const markAsReadMutation = useMutation({
@@ -48,6 +51,7 @@ export const useNotificationSettings = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.settings() });
     },
+    // Global interceptor handles 401
   });
 
   return {

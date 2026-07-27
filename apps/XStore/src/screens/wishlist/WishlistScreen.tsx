@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import { formatCurrencyShort } from '../../utils/currency';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useWishlistStore } from '../../store/slices/wishlist.slice';
@@ -42,21 +43,24 @@ export const WishlistScreen = ({ navigation }: any) => {
 
       <FlatList
         data={items}
-        renderItem={({ item }) => (
-          <View style={styles.wishlistItem}>
-            <TouchableOpacity
-              style={styles.itemContent}
-              onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
-            >
-              <Image
-                source={{ uri: item.images?.[0]?.url || 'https://via.placeholder.com/80' }}
-                style={styles.itemImage}
-              />
-              <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item.title}</Text>
-                <Text style={styles.itemPrice}>
-                  ₦{(item.variants?.[0]?.prices?.[0]?.amount / 100 || 0).toFixed(2)}
-                </Text>
+        renderItem={({ item }) => {
+          const imageUrl = item.images?.[0] ? (typeof item.images[0] === 'string' ? item.images[0] : item.images[0]?.url) : 'https://via.placeholder.com/80';
+          const priceAmount = item.variants?.[0]?.prices?.[0]?.amount || item.price || 0;
+          return (
+            <View style={styles.wishlistItem}>
+              <TouchableOpacity
+                style={styles.itemContent}
+                onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+              >
+                <Image
+                  source={{ uri: imageUrl }}
+                  style={styles.itemImage}
+                />
+                <View style={styles.itemInfo}>
+                  <Text style={styles.itemName}>{item.title}</Text>
+                  <Text style={styles.itemPrice}>
+                    {formatCurrencyShort(priceAmount)}
+                  </Text>
                 <TouchableOpacity style={styles.addToCartButton}>
                   <Text style={styles.addToCartText}>Add to Cart</Text>
                 </TouchableOpacity>
