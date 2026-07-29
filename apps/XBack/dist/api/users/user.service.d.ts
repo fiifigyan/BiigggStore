@@ -16,10 +16,10 @@ export declare class UserService {
             status: string;
         }[];
         addresses: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             address1: string;
             address2: string | null;
             city: string;
@@ -43,10 +43,10 @@ export declare class UserService {
         avatar: string | null;
     }>;
     getAddresses(userId: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         address1: string;
         address2: string | null;
         city: string;
@@ -56,10 +56,10 @@ export declare class UserService {
         isDefault: boolean;
     }[]>;
     addAddress(userId: string, data: any): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         address1: string;
         address2: string | null;
         city: string;
@@ -69,10 +69,10 @@ export declare class UserService {
         isDefault: boolean;
     }>;
     updateAddress(userId: string, addressId: string, data: any): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         address1: string;
         address2: string | null;
         city: string;

@@ -1,5 +1,5 @@
 // apps/mobile/src/screens/checkout/CheckoutScreen.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '../../store/slices/cart.slice';
 import { useAuthStore } from '../../store/slices/auth.slice';
-import { PaystackPayment } from '../../components/payment/PaystackPayment';
 import { paymentApi } from '../../api/payment';
+import { orderApi } from '../../api/orders';
 import { formatCurrencyShort } from '../../utils/currency';
 
 export const CheckoutScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
-  const { items, totalPrice, cartId } = useCartStore();
+  const { items, totalPrice, cartId, ensureCartId, clearCart } = useCartStore();
   const { user } = useAuthStore();
   
   const [showPayment, setShowPayment] = useState(false);
@@ -29,7 +29,7 @@ export const CheckoutScreen = ({ navigation }: any) => {
   const [address, setAddress] = useState({
     address_1: '',
     city: '',
-    country_code: 'NG',
+    country_code: '',
     postal_code: '',
     phone: '',
   });
@@ -47,15 +47,60 @@ export const CheckoutScreen = ({ navigation }: any) => {
 
     setIsLoading(true);
     try {
-      // Initialize payment session with Paystack
-      await paymentApi.initiatePayment(cartId);
-      
-      // Show Paystack payment modal
-      setShowPayment(true);
+      const resolvedCartId = await ensureCartId();
+
+      if (!resolvedCartId) {
+        throw new Error('Cart not initialized');
+      }
+
+      let paymentReference: string | undefined;
+
+      try {
+        const response = await paymentApi.initiatePayment({
+          amount: Math.round(totalPrice),
+          email,
+          currency: 'GHS',
+        });
+
+        if (!response?.success) {
+          throw new Error(response?.message || 'Failed to initialize payment');
+        }
+
+        paymentReference = response?.payment?.reference || response?.reference;
+      } catch (paymentError: any) {
+        console.warn('Payment initialization unavailable, creating order directly:', paymentError);
+      }
+
+      const orderPayload = await orderApi.createOrder({
+        address: {
+          ...address,
+          email,
+          country: address.country_code || 'GH',
+        },
+        paymentId: paymentReference,
+      });
+
+      const order = orderPayload?.order ?? orderPayload;
+      clearCart();
+      setShowPayment(false);
+
+      Alert.alert(
+        paymentReference ? 'Order placed' : 'Order placed without payment gateway',
+        `Your order ${order?.orderNumber || order?.id || 'was created successfully'}.`,
+        [
+          {
+            text: 'View Order',
+            onPress: () => navigation.navigate('OrderDetails', { orderId: order?.id }),
+          },
+          {
+            text: 'Continue Shopping',
+            onPress: () => navigation.navigate('Home'),
+          },
+        ]
+      );
     } catch (error: any) {
       console.error('Payment initiation failed:', error);
-      // Let the global interceptor handle 401/refresh; surface other errors
-      Alert.alert('Error', 'Failed to initialize payment. Please try again.');
+      Alert.alert('Error', 'We could not complete your order. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -182,15 +227,6 @@ export const CheckoutScreen = ({ navigation }: any) => {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Paystack Payment Modal */}
-      <PaystackPayment
-        visible={showPayment}
-        onClose={() => setShowPayment(false)}
-        onSuccess={handlePaymentSuccess}
-        onError={handlePaymentError}
-        amount={totalPrice}
-        email={email}
-      />
     </View>
   );
 };

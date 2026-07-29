@@ -19,7 +19,7 @@ const toneStyles = {
 };
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value / 100);
+  return new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((value || 0) / 100);
 }
 
 export default function NotificationCenter({ orders, products }: Props) {

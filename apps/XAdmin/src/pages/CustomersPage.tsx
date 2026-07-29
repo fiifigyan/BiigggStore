@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { adminApi, type Order } from '../api/adminApi';
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value / 100);
+  return new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((value || 0) / 100);
 }
 
 export default function CustomersPage() {

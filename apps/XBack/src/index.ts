@@ -13,6 +13,7 @@ import cartRoutes from './api/cart/cart.routes';
 import orderRoutes from './api/orders/order.routes';
 import userRoutes from './api/users/user.routes';
 import notificationRoutes from './api/notifications/notification.routes';
+import paymentRoutes from './api/payments/payment.routes';
 import adminRoutes from './api/admin/admin.routes';
 import { adminAuth } from './middleware/admin';
 
@@ -95,6 +96,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
 // SSE endpoint for admin notifications

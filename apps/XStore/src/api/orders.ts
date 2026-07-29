@@ -23,7 +23,7 @@ export const orderApi = {
   // Get single order
   getOrder: async (orderId: string) => {
     const { data } = await apiClient.get(API_CONFIG.orders.detail(orderId));
-    return data;
+    return data.order ?? data;
   },
 
   // Get order status

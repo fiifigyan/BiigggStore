@@ -23,7 +23,7 @@ export const ProfileScreen = ({ navigation }: any) => {
   const { clearCart } = useCartStore();
   const { data: orders } = useOrders();
   const { notifications = [] } = useNotifications();
-  const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const unreadCount = (notifications || []).filter((item: any) => !item.isRead).length;
   const orderList = Array.isArray(orders) ? orders : [];
   const totalSpent = orderList.reduce((sum, order) => sum + (order?.total ?? 0), 0);
 

@@ -19,6 +19,7 @@ import { productApi } from '../../api/products';
 import { cartApi } from '../../api/cart';
 import { useAuthStore } from '../../store/slices/auth.slice';
 import { useWishlistStore } from '../../store/slices/wishlist.slice';
+import { useCartStore } from '../../store/slices/cart.slice';
 import { ImageZoom } from '../../components/common/ImageZoom';
 import { formatCurrencyShort } from '../../utils/currency';
 
@@ -29,13 +30,10 @@ export const ProductDetailScreen = ({ route, navigation }: any) => {
   const insets = useSafeAreaInsets();
   const { user, setUser } = useAuthStore();
   const { addItem: addWishlistItem, removeItem: removeWishlistItem, isInWishlist } = useWishlistStore();
+  const { addItem: addCartItem } = useCartStore();
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const wishlistImages = product?.images?.map((image: string) =>
-    typeof image === 'string' ? { url: image } : image
-  );
 
   const toggleWishlist = () => {
     if (!product) return;
@@ -57,6 +55,10 @@ export const ProductDetailScreen = ({ route, navigation }: any) => {
     queryFn: () => productApi.getProduct(productId),
   });
 
+  const wishlistImages = product?.images?.map((image: string | { url?: string }) =>
+    typeof image === 'string' ? { url: image } : image
+  );
+
   const getImageUrl = (images?: Array<{ url?: string } | string>, index = 0) => {
     const image = images?.[index];
     if (!image) return 'https://via.placeholder.com/300x300';
@@ -71,7 +73,21 @@ export const ProductDetailScreen = ({ route, navigation }: any) => {
 
   const addToCartMutation = useMutation({
     mutationFn: (params: any) => cartApi.addItem(params.productId, params.quantity),
-    onSuccess: () => {
+    onSuccess: async (_data, variables) => {
+      addCartItem({
+        id: `${variables.productId}-${selectedVariant?.id || 'default'}`,
+        variantId: selectedVariant?.id || variables.productId,
+        variantTitle: selectedVariant?.title || 'Default',
+        quantity: variables.quantity,
+        product: {
+          id: product.id,
+          title: product.title,
+          price: selectedVariant?.prices?.[0]?.amount || product.price || 0,
+          images: product.images?.map((image: string | { url?: string }) =>
+            typeof image === 'string' ? { url: image } : { url: image?.url || '' }
+          ),
+        },
+      });
       Alert.alert('Success', 'Item added to cart!');
     },
     onError: (error: any) => {
@@ -127,7 +143,7 @@ export const ProductDetailScreen = ({ route, navigation }: any) => {
           <ImageZoom source={{ uri: getImageUrl(product.images, currentImageIndex) }} style={styles.mainImage} />
           {product.images && product.images.length > 1 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailsContainer}>
-              {product.images.map((image, index) => (
+              {product.images.map((image: string | { url?: string }, index: number) => (
                 <TouchableOpacity key={index} onPress={() => setCurrentImageIndex(index)}>
                   <Image
                     source={{ uri: typeof image === 'string' ? image : image?.url || 'https://via.placeholder.com/300x300' }}
@@ -160,7 +176,7 @@ export const ProductDetailScreen = ({ route, navigation }: any) => {
             <View style={styles.variantsContainer}>
               <Text style={styles.variantTitle}>Choose a variant</Text>
               <View style={styles.variantOptions}>
-                {product.variants.map((variant) => (
+                {product.variants.map((variant: any) => (
                   <TouchableOpacity
                     key={variant.id}
                     style={[
