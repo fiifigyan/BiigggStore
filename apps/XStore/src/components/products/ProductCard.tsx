@@ -59,8 +59,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
         <TouchableOpacity style={styles.wishlistButton} onPress={toggleWishlist}>
           <Ionicons
             name={isWishlisted ? 'heart' : 'heart-outline'}
-            size={16}
-            color={isWishlisted ? '#ff3b30' : '#64748b'}
+            size={18}
+            color={isWishlisted ? '#DC414C' : '#333A55'}
           />
         </TouchableOpacity>
       </View>
@@ -68,7 +68,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
         <Text style={styles.title} numberOfLines={2}>
           {product.title}
         </Text>
-        <Text style={styles.price}>{formatCurrencyShort(price)}</Text>
+        <View style={styles.priceRow}>
+          <Text style={styles.price}>{formatCurrencyShort(price)}</Text>
+          <View style={styles.ratingBadge}>
+            <Ionicons name="star" size={12} color="#F59E0B" />
+            <Text style={styles.ratingText}>4.8</Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -77,23 +83,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
 const styles = StyleSheet.create({
   container: {
     width: cardWidth,
-    marginRight: 12,
-    marginBottom: 10,
-    backgroundColor: '#fff',
+    marginRight: 14,
+    marginBottom: 8,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 3,
+    borderColor: '#D8D8D8',
   },
   imageContainer: {
     position: 'relative',
     height: cardWidth,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F8FAFC',
   },
   image: {
     width: '100%',
@@ -102,24 +103,49 @@ const styles = StyleSheet.create({
   },
   wishlistButton: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 10,
+    right: 10,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 20,
     padding: 6,
+    shadowColor: '#1D1F29',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   infoContainer: {
     padding: 12,
   },
   title: {
     fontSize: 13,
-    color: '#334155',
-    marginBottom: 6,
+    fontWeight: '500',
+    color: '#1D1F29',
     lineHeight: 18,
+    marginBottom: 6,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   price: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#4f46e5',
+    color: '#1EB589',
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    gap: 4,
+  },
+  ratingText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#333A55',
   },
 });

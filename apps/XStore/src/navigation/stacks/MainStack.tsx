@@ -25,7 +25,7 @@ const Stack = createNativeStackNavigator();
 const TabNavigator = () => {
   const { items: cartItems } = useCartStore();
   const { notifications } = useNotifications();
-  const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const unreadCount = (notifications || []).filter((item: any) => !item.isRead).length;
 
   return (
     <Tab.Navigator
@@ -73,7 +73,6 @@ const TabNavigator = () => {
           );
         },
       })}
-      sceneContainerStyle={{ backgroundColor: '#f4f6fb' }}
     >
       <Tab.Screen
         name="Home"

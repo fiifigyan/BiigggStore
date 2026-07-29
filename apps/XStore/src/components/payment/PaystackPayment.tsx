@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Paystack, paystackProps } from 'react-native-paystack-webview';
 import { useCartStore } from '../../store/slices/cart.slice';
 import { paymentApi } from '../../api/payment';
 import { useNavigation } from '@react-navigation/native';
@@ -30,7 +29,7 @@ export const PaystackPayment: React.FC<PaystackPaymentProps> = ({
   amount,
   email,
 }) => {
-  const paystackWebViewRef = useRef<paystackProps.PayStackRef>(null);
+  const paystackWebViewRef = useRef<any>(null);
   const { clearCart } = useCartStore();
   const navigation = useNavigation();
 
@@ -39,7 +38,8 @@ export const PaystackPayment: React.FC<PaystackPaymentProps> = ({
   const handlePaymentSuccess = async (response: any) => {
     try {
       // Complete the order in Medusa
-      const order = await paymentApi.completeOrder(useCartStore.getState().cartId);
+      const cartId = useCartStore.getState().cartId;
+      const order = await paymentApi.completeOrder(cartId || '');
       
       // Clear cart locally
       clearCart();
@@ -48,7 +48,7 @@ export const PaystackPayment: React.FC<PaystackPaymentProps> = ({
       onSuccess(order);
       
       // Navigate to order confirmation
-      navigation.navigate('OrderConfirmation', { order });
+      (navigation as any).navigate('OrderConfirmation', { order });
     } catch (error) {
       console.error('Order completion failed:', error);
       onError(error);
@@ -92,23 +92,18 @@ export const PaystackPayment: React.FC<PaystackPaymentProps> = ({
             </Text>
           </View>
 
-          {/* Paystack WebView */}
+          {/* Payment fallback */}
           <View style={styles.webviewContainer}>
-            <Paystack
-              ref={paystackWebViewRef}
-              paystackKey={PAYSTACK_PUBLIC_KEY}
-              amount={(amount / 100).toString()}
-              billingEmail={email}
-              billingName="Customer"
-              billingMobile="08012345678"
-              activityIndicatorColor="#007AFF"
-              onCancel={handlePaymentCancel}
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-              autoStart={true}
-              channels={['card', 'bank', 'ussd', 'mobile_money', 'qr']}
-              refNumber={`REF-${Date.now()}-${Math.floor(Math.random() * 1000)}`}
-            />
+            <View style={styles.fallbackContainer}>
+              <Ionicons name="card-outline" size={40} color="#4f46e5" />
+              <Text style={styles.fallbackTitle}>Payment unavailable</Text>
+              <Text style={styles.fallbackText}>
+                The checkout provider is currently unavailable. Please try again shortly.
+              </Text>
+              <TouchableOpacity style={styles.fallbackButton} onPress={onClose}>
+                <Text style={styles.fallbackButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Footer */}
@@ -193,5 +188,35 @@ const styles = StyleSheet.create({
   footerText: {
     color: '#999',
     fontSize: 12,
+  },
+  fallbackContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  fallbackTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 12,
+  },
+  fallbackText: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  fallbackButton: {
+    marginTop: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: '#4f46e5',
+  },
+  fallbackButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });

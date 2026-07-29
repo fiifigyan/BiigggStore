@@ -38,10 +38,10 @@ export declare class AuthService {
         avatar: string | null;
         createdAt: Date;
         addresses: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             address1: string;
             address2: string | null;
             city: string;

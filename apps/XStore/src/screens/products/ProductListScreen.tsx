@@ -62,7 +62,7 @@ export const ProductListScreen = ({ navigation }: any) => {
   const products = data?.pages.flatMap((page) => page.products) ?? [];
 
   const renderItem = useCallback(
-    ({ item }) => (
+    ({ item }: { item: any }) => (
       <ProductCard
         product={item}
         onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}

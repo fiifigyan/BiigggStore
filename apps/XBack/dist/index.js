@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const prisma_1 = require("./lib/prisma");
 // Routes
 const auth_routes_1 = __importDefault(require("./api/auth/auth.routes"));
 const product_routes_1 = __importDefault(require("./api/products/product.routes"));
@@ -15,6 +16,7 @@ const cart_routes_1 = __importDefault(require("./api/cart/cart.routes"));
 const order_routes_1 = __importDefault(require("./api/orders/order.routes"));
 const user_routes_1 = __importDefault(require("./api/users/user.routes"));
 const notification_routes_1 = __importDefault(require("./api/notifications/notification.routes"));
+const payment_routes_1 = __importDefault(require("./api/payments/payment.routes"));
 const admin_routes_1 = __importDefault(require("./api/admin/admin.routes"));
 const admin_1 = require("./middleware/admin");
 // Middleware
@@ -62,6 +64,7 @@ app.use((0, cors_1.default)({
 // Body parser
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.locals.prisma = prisma_1.prisma;
 // Health check
 app.get('/health', (_req, res) => {
     res.json({
@@ -77,6 +80,7 @@ app.use('/api/cart', cart_routes_1.default);
 app.use('/api/orders', order_routes_1.default);
 app.use('/api/users', user_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
+app.use('/api/payments', payment_routes_1.default);
 app.use('/api/admin', admin_routes_1.default);
 // SSE endpoint for admin notifications
 app.get('/api/admin/stream', admin_1.adminAuth, (req, res) => {

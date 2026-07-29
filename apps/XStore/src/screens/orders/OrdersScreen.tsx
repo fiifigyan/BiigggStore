@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { orderApi } from '../../api/orders';
 import { Alert } from 'react-native';
 import { useAuthStore } from '../../store/slices/auth.slice';
+import { formatCurrencyShort } from '../../utils/currency';
 
 export const OrdersScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
@@ -75,19 +76,19 @@ export const OrdersScreen = ({ navigation }: any) => {
             onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}
           >
             <View style={styles.orderHeader}>
-              <Text style={styles.orderNumber}>#{item.display_id}</Text>
+              <Text style={styles.orderNumber}>#{item.orderNumber || item.id}</Text>
               <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
                 <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
               </View>
             </View>
             <View style={styles.orderDetails}>
               <Text style={styles.orderItems}>
-                {item.items.length} items • {item.items.reduce((sum, i) => sum + i.quantity, 0)} total
+                {(item.items || []).length} items • {(item.items || []).reduce((sum: number, i: any) => sum + i.quantity, 0)} total
               </Text>
-              <Text style={styles.orderPrice}>₦{(item.total / 100).toFixed(2)}</Text>
+              <Text style={styles.orderPrice}>{formatCurrencyShort(item.total || 0)}</Text>
             </View>
             <Text style={styles.orderDate}>
-              {new Date(item.created_at).toLocaleDateString('en-US', {
+              {new Date(item.createdAt || item.created_at || Date.now()).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',

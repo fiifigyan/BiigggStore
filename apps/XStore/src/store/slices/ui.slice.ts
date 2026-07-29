@@ -4,7 +4,7 @@ import { create } from 'zustand';
 interface UIState {
   theme: 'light' | 'dark';
   isLoading: boolean;
-  showBottomSheet: boolean;
+  isBottomSheetVisible: boolean;
   bottomSheetContent: React.ReactNode | null;
   toastMessage: string | null;
   toastType: 'success' | 'error' | 'info' | null;
@@ -20,7 +20,7 @@ interface UIState {
 export const useUIStore = create<UIState>((set) => ({
   theme: 'light',
   isLoading: false,
-  showBottomSheet: false,
+  isBottomSheetVisible: false,
   bottomSheetContent: null,
   toastMessage: null,
   toastType: null,
@@ -28,9 +28,9 @@ export const useUIStore = create<UIState>((set) => ({
   setTheme: (theme) => set({ theme }),
   setLoading: (isLoading) => set({ isLoading }),
   showBottomSheet: (bottomSheetContent) =>
-    set({ showBottomSheet: true, bottomSheetContent }),
+    set({ isBottomSheetVisible: true, bottomSheetContent }),
   hideBottomSheet: () =>
-    set({ showBottomSheet: false, bottomSheetContent: null }),
+    set({ isBottomSheetVisible: false, bottomSheetContent: null }),
   showToast: (toastMessage, toastType) => set({ toastMessage, toastType }),
   hideToast: () => set({ toastMessage: null, toastType: null }),
 }));

@@ -75,7 +75,6 @@ export const RegisterScreen = ({ navigation }: any) => {
 
   const handleRegister = async () => {
     if (!validate()) return;
-
     try {
       await register({
         email: formData.email,
@@ -93,31 +92,38 @@ export const RegisterScreen = ({ navigation }: any) => {
   };
 
   return (
-    <LinearGradient colors={['#f8faff', '#eef2ff']} style={styles.container}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         style={[styles.container, { paddingTop: insets.top }]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-          <View style={styles.heroCard}>
-            <LinearGradient colors={['#4f46e5', '#2563eb']} style={styles.heroGradient}>
-              <View style={styles.logoBadge}>
-                <Ionicons name="person-add-outline" size={22} color="#fff" />
-              </View>
-              <Text style={styles.title}>Create account</Text>
-              <Text style={styles.subtitle}>Join BiigggStore and start shopping with confidence.</Text>
-            </LinearGradient>
+          {/* Brand Header */}
+          <View style={styles.brandContainer}>
+            <View style={styles.logoWrapper}>
+              <LinearGradient
+                colors={['#1EB589', '#178FF5']}
+                style={styles.logoGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="person-add-outline" size={24} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+            <Text style={styles.brandTitle}>Create Account</Text>
+            <Text style={styles.brandSubtitle}>Join BiigggStore and start shopping with confidence</Text>
           </View>
 
+          {/* Registration Form */}
           <View style={styles.formCard}>
             <View style={styles.row}>
               <View style={[styles.inputContainer, styles.halfWidth]}>
-                <Text style={styles.label}>First name</Text>
+                <Text style={styles.label}>First Name</Text>
                 <View style={[styles.inputWrapper, errors.first_name && styles.inputError]}>
                   <TextInput
                     style={styles.input}
                     placeholder="John"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor="#D8D8D8"
                     value={formData.first_name}
                     onChangeText={(text) => {
                       setFormData({ ...formData, first_name: text });
@@ -129,12 +135,12 @@ export const RegisterScreen = ({ navigation }: any) => {
               </View>
 
               <View style={[styles.inputContainer, styles.halfWidth]}>
-                <Text style={styles.label}>Last name</Text>
+                <Text style={styles.label}>Last Name</Text>
                 <View style={[styles.inputWrapper, errors.last_name && styles.inputError]}>
                   <TextInput
                     style={styles.input}
                     placeholder="Doe"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor="#D8D8D8"
                     value={formData.last_name}
                     onChangeText={(text) => {
                       setFormData({ ...formData, last_name: text });
@@ -147,12 +153,12 @@ export const RegisterScreen = ({ navigation }: any) => {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email address</Text>
+              <Text style={styles.label}>Email Address</Text>
               <View style={[styles.inputWrapper, errors.email && styles.inputError]}>
                 <TextInput
                   style={styles.input}
                   placeholder="john@example.com"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#D8D8D8"
                   value={formData.email}
                   onChangeText={(text) => {
                     setFormData({ ...formData, email: text });
@@ -167,12 +173,12 @@ export const RegisterScreen = ({ navigation }: any) => {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Phone number</Text>
+              <Text style={styles.label}>Phone Number</Text>
               <View style={[styles.inputWrapper, errors.phone && styles.inputError]}>
                 <TextInput
                   style={styles.input}
                   placeholder="08012345678"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#D8D8D8"
                   value={formData.phone}
                   onChangeText={(text) => {
                     setFormData({ ...formData, phone: text });
@@ -190,7 +196,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                 <TextInput
                   style={styles.input}
                   placeholder="Create a strong password"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#D8D8D8"
                   value={formData.password}
                   onChangeText={(text) => {
                     setFormData({ ...formData, password: text });
@@ -200,7 +206,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                   autoCapitalize="none"
                 />
                 <TouchableOpacity style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
-                  <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#64748b" />
+                  <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#333A55" />
                 </TouchableOpacity>
               </View>
               {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
@@ -208,12 +214,12 @@ export const RegisterScreen = ({ navigation }: any) => {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirm password</Text>
+              <Text style={styles.label}>Confirm Password</Text>
               <View style={[styles.inputWrapper, errors.confirmPassword && styles.inputError]}>
                 <TextInput
                   style={styles.input}
                   placeholder="Confirm your password"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#D8D8D8"
                   value={formData.confirmPassword}
                   onChangeText={(text) => {
                     setFormData({ ...formData, confirmPassword: text });
@@ -223,7 +229,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                   autoCapitalize="none"
                 />
                 <TouchableOpacity style={styles.eyeButton} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                  <Ionicons name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#64748b" />
+                  <Ionicons name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#333A55" />
                 </TouchableOpacity>
               </View>
               {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
@@ -232,11 +238,12 @@ export const RegisterScreen = ({ navigation }: any) => {
             <View style={styles.termsContainer}>
               <TouchableOpacity style={styles.checkbox} onPress={() => setAgreeToTerms(!agreeToTerms)}>
                 <View style={[styles.checkboxBox, agreeToTerms && styles.checkboxChecked]}>
-                  {agreeToTerms && <Ionicons name="checkmark" size={16} color="#fff" />}
+                  {agreeToTerms && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
                 </View>
               </TouchableOpacity>
               <Text style={styles.termsText}>
-                I agree to the <Text style={styles.termsLink}>Terms</Text> and <Text style={styles.termsLink}>Privacy Policy</Text>
+                I agree to the <Text style={styles.termsLink}>Terms</Text> and{' '}
+                <Text style={styles.termsLink}>Privacy Policy</Text>
               </Text>
             </View>
             {errors.terms && <Text style={[styles.errorText, styles.termsError]}>{errors.terms}</Text>}
@@ -245,31 +252,39 @@ export const RegisterScreen = ({ navigation }: any) => {
               style={[styles.registerButton, registerLoading && styles.buttonDisabled]}
               onPress={handleRegister}
               disabled={registerLoading}
-              activeOpacity={0.9}
+              activeOpacity={0.85}
             >
-              {registerLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.registerButtonText}>Create account</Text>
-              )}
+              <LinearGradient
+                colors={['#1EB589', '#178FF5']}
+                style={styles.registerGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                {registerLoading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.registerButtonText}>Create Account</Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>Already have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.footerLink}>Sign in</Text>
+                <Text style={styles.footerLink}>Sign In</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     flexGrow: 1,
@@ -277,50 +292,44 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 32,
   },
-  heroCard: {
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#4f46e5',
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.14,
-    shadowRadius: 24,
-    elevation: 8,
+  brandContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  heroGradient: {
-    paddingHorizontal: 22,
-    paddingTop: 24,
-    paddingBottom: 26,
+  logoWrapper: {
+    marginBottom: 12,
   },
-  logoBadge: {
-    width: 46,
-    height: 46,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  logoGradient: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 14,
+    shadowColor: '#1EB589',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 4,
   },
-  title: {
+  brandTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#fff',
-    marginBottom: 6,
+    color: '#1D1F29',
+    marginBottom: 4,
+    letterSpacing: -0.5,
   },
-  subtitle: {
+  brandSubtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
-    lineHeight: 20,
+    color: '#333A55',
+    opacity: 0.7,
+    textAlign: 'center',
   },
   formCard: {
-    marginTop: 18,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 18,
-    shadowColor: '#1f2937',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#D8D8D8',
   },
   row: {
     flexDirection: 'row',
@@ -335,40 +344,41 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
-    marginBottom: 8,
+    color: '#20222F',
+    marginBottom: 6,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#dbe3f0',
+    borderColor: '#D8D8D8',
     borderRadius: 14,
-    backgroundColor: '#f8fafc',
-    paddingHorizontal: 12,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 14,
   },
   input: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#0f172a',
+    color: '#1D1F29',
   },
   inputError: {
-    borderColor: '#fb7185',
+    borderColor: '#DC414C',
   },
   eyeButton: {
     paddingLeft: 8,
     paddingVertical: 8,
   },
   errorText: {
-    color: '#ef4444',
+    color: '#DC414C',
     fontSize: 12,
     marginTop: 4,
   },
   passwordHint: {
-    color: '#94a3b8',
+    color: '#333A55',
     fontSize: 12,
     marginTop: 4,
+    opacity: 0.6,
   },
   termsContainer: {
     flexDirection: 'row',
@@ -377,28 +387,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   checkbox: {
-    marginRight: 10,
+    marginRight: 12,
   },
   checkboxBox: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: '#d1d5db',
+    borderColor: '#D8D8D8',
     justifyContent: 'center',
     alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#4f46e5',
-    borderColor: '#4f46e5',
+    backgroundColor: '#1EB589',
+    borderColor: '#1EB589',
   },
   termsText: {
     flex: 1,
     fontSize: 13,
-    color: '#64748b',
+    color: '#333A55',
   },
   termsLink: {
-    color: '#2563eb',
+    color: '#1EB589',
     fontWeight: '600',
   },
   termsError: {
@@ -406,19 +416,25 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   registerButton: {
-    backgroundColor: '#4f46e5',
     borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#1EB589',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  registerGradient: {
     paddingVertical: 14,
     alignItems: 'center',
-    marginTop: 4,
+  },
+  registerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
   buttonDisabled: {
     opacity: 0.7,
-  },
-  registerButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
   },
   footer: {
     flexDirection: 'row',
@@ -428,11 +444,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#333A55',
   },
   footerLink: {
     fontSize: 14,
-    color: '#2563eb',
+    color: '#1EB589',
     fontWeight: '700',
   },
 });

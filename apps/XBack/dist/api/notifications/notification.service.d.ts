@@ -1,9 +1,9 @@
 export declare class NotificationService {
     getNotifications(userId: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         title: string;
         body: string;
         type: string;
@@ -11,16 +11,16 @@ export declare class NotificationService {
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     registerDeviceToken(userId: string, token: string, platform?: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         token: string;
         platform: string | null;
     }>;
     unregisterDeviceToken(userId: string, tokenOrId: string): Promise<import(".prisma/client").Prisma.BatchPayload | {
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         token: string;
         platform: string | null;
     }>;
@@ -31,10 +31,10 @@ export declare class NotificationService {
         notificationsEnabled: boolean;
     }>;
     markAsRead(userId: string, notificationId: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         title: string;
         body: string;
         type: string;
@@ -43,10 +43,10 @@ export declare class NotificationService {
     }>;
     markAllAsRead(userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     createNotification(userId: string, title: string, body: string, type?: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         title: string;
         body: string;
         type: string;

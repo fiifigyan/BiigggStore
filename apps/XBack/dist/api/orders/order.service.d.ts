@@ -26,11 +26,11 @@ export declare class OrderService {
             orderId: string;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         orderNumber: string;
+        userId: string;
         total: number;
         subtotal: number;
         tax: number;
@@ -70,11 +70,11 @@ export declare class OrderService {
             orderId: string;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         orderNumber: string;
+        userId: string;
         total: number;
         subtotal: number;
         tax: number;
@@ -114,11 +114,11 @@ export declare class OrderService {
             orderId: string;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         orderNumber: string;
+        userId: string;
         total: number;
         subtotal: number;
         tax: number;
@@ -139,11 +139,11 @@ export declare class OrderService {
         tracking: string | null;
     }>;
     cancel(userId: string, orderId: string): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         orderNumber: string;
+        userId: string;
         total: number;
         subtotal: number;
         tax: number;

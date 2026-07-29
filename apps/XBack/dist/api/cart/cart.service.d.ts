@@ -26,10 +26,10 @@ export declare class CartService {
             quantity: number;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
     addItem(userId: string, productId: string, quantity?: number): Promise<{
         items: ({
@@ -58,10 +58,10 @@ export declare class CartService {
             quantity: number;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
     updateQuantity(userId: string, itemId: string, quantity: number): Promise<{
         items: ({
@@ -90,10 +90,10 @@ export declare class CartService {
             quantity: number;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
     removeItem(userId: string, itemId: string): Promise<{
         items: ({
@@ -122,10 +122,10 @@ export declare class CartService {
             quantity: number;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
     clearCart(userId: string): Promise<{
         items: ({
@@ -154,10 +154,10 @@ export declare class CartService {
             quantity: number;
         })[];
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
     }>;
 }
 //# sourceMappingURL=cart.service.d.ts.map

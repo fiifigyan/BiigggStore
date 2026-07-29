@@ -23,13 +23,13 @@ export declare class ProductService {
     }>;
     getById(id: string): Promise<({
         reviews: {
-            userId: string;
             user: {
                 firstName: string | null;
                 lastName: string | null;
             };
             id: string;
             createdAt: Date;
+            userId: string;
             rating: number;
             comment: string | null;
         }[];

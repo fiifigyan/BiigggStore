@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import * as SecureStore from 'expo-secure-store';
+import { cartApi } from '../../api/cart';
 
 export interface CartItem {
   id: string;
@@ -32,6 +33,7 @@ interface CartState {
   recalculateTotals: () => void;
   applyCoupon: (coupon: string, discount: number) => void;
   removeCoupon: () => void;
+  ensureCartId: () => Promise<string | null>;
 }
 
 // SecureStore storage adapter for Zustand
@@ -145,6 +147,27 @@ export const useCartStore = create<CartState>()(
       removeCoupon: () => {
         set({ coupon: null, discount: 0 });
         get().recalculateTotals();
+      },
+
+      ensureCartId: async () => {
+        const currentCartId = get().cartId;
+        if (currentCartId) {
+          return currentCartId;
+        }
+
+        try {
+          const response = await cartApi.getCart();
+          const nextCartId = response?.cart?.id || response?.id || null;
+
+          if (nextCartId) {
+            set({ cartId: nextCartId });
+          }
+
+          return nextCartId;
+        } catch (error) {
+          console.error('Failed to initialize cart:', error);
+          return null;
+        }
       },
     }),
     {

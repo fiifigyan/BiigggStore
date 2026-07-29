@@ -61,28 +61,29 @@ export const WishlistScreen = ({ navigation }: any) => {
                   <Text style={styles.itemPrice}>
                     {formatCurrencyShort(priceAmount)}
                   </Text>
-                <TouchableOpacity style={styles.addToCartButton}>
-                  <Text style={styles.addToCartText}>Add to Cart</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.removeButton}
-              onPress={() => {
-                Alert.alert(
-                  'Remove from Wishlist',
-                  'Are you sure you want to remove this item?',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Remove', style: 'destructive', onPress: () => removeItem(item.id) },
-                  ]
-                );
-              }}
-            >
-              <Ionicons name="heart" size={20} color="#ff3b30" />
-            </TouchableOpacity>
-          </View>
-        )}
+                  <TouchableOpacity style={styles.addToCartButton}>
+                    <Text style={styles.addToCartText}>Add to Cart</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => {
+                  Alert.alert(
+                    'Remove from Wishlist',
+                    'Are you sure you want to remove this item?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Remove', style: 'destructive', onPress: () => removeItem(item.id) },
+                    ]
+                  );
+                }}
+              >
+                <Ionicons name="heart" size={20} color="#ff3b30" />
+              </TouchableOpacity>
+            </View>
+          );
+        }}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />

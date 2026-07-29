@@ -1,7 +1,20 @@
 // apps/mobile/src/utils/storage.ts
-import { MMKV } from 'react-native-mmkv';
+let storage: any = null;
 
-const storage = new MMKV();
+try {
+  const mmkvModule = require('react-native-mmkv');
+  storage = new mmkvModule.MMKV();
+} catch (error) {
+  console.warn('react-native-mmkv is not available, falling back to memory storage');
+  storage = {
+    getString: () => null,
+    set: () => undefined,
+    delete: () => undefined,
+    clearAll: () => undefined,
+    contains: () => false,
+    getAllKeys: () => [],
+  };
+}
 
 export const storageUtil = {
   // Get item

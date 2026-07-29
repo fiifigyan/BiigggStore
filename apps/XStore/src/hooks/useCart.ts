@@ -4,8 +4,6 @@ import { cartApi } from '../api/cart';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import { useEffect } from 'react';
-import { Alert } from 'react-native';
-import { useAuthStore } from '../store/slices/auth.slice';
 
 export const useCart = () => {
   const { 
@@ -23,29 +21,17 @@ export const useCart = () => {
 
   const { user, isAuthenticated } = useAuth();
 
-  // Create cart mutation
-  const createCartMutation = useMutation({
-    mutationFn: () => cartApi.createCart(),
-    onSuccess: (data) => {
-      setCartId(data.cart.id);
-    },
-    onError: (error: any) => {
-      // Let the global apiClient interceptor handle 401/refresh logic
-      console.error('createCartMutation error:', error);
-    },
-  });
-
   // Get cart query
   const { data: cartData, refetch: refetchCart } = useQuery({
     queryKey: ['cart', cartId],
-    queryFn: () => cartApi.getCart(cartId),
+    queryFn: () => cartApi.getCart(),
     enabled: !!cartId,
   });
 
   // Add item mutation
   const addItemMutation = useMutation({
     mutationFn: ({ variantId, quantity }: { variantId: string; quantity: number }) =>
-      cartApi.addItem(cartId!, variantId, quantity),
+      cartApi.addItem(variantId, quantity),
     onSuccess: (data) => {
       // Update local store
       // We'll sync with server state
@@ -59,7 +45,7 @@ export const useCart = () => {
   // Update quantity mutation
   const updateQuantityMutation = useMutation({
     mutationFn: ({ lineItemId, quantity }: { lineItemId: string; quantity: number }) =>
-      cartApi.updateItemQuantity(cartId!, lineItemId, quantity),
+      cartApi.updateItemQuantity(lineItemId, quantity),
     onError: (error: any) => {
       console.error('updateQuantityMutation error:', error);
     },
@@ -68,7 +54,7 @@ export const useCart = () => {
   // Remove item mutation
   const removeItemMutation = useMutation({
     mutationFn: (lineItemId: string) =>
-      cartApi.removeItem(cartId!, lineItemId),
+      cartApi.removeItem(lineItemId),
     onError: (error: any) => {
       console.error('removeItemMutation error:', error);
     },
@@ -78,10 +64,12 @@ export const useCart = () => {
   const initializeCart = async () => {
     if (isAuthenticated && !cartId) {
       try {
-        const response = await cartApi.createCart();
-        setCartId(response.cart.id);
+        const response = await cartApi.getCart();
+        if (response?.cart?.id) {
+          setCartId(response.cart.id);
+        }
       } catch (error) {
-        console.error('Failed to create cart:', error);
+        console.error('Failed to initialize cart:', error);
       }
     }
   };
@@ -90,7 +78,7 @@ export const useCart = () => {
   const syncCart = async () => {
     if (cartId) {
       try {
-        const data = await cartApi.getCart(cartId);
+        const data = await cartApi.getCart();
         // Update local store with server data
         // This is a simplified version - you'll want to handle conflicts
         return data;
@@ -144,7 +132,7 @@ export const useCart = () => {
     try {
       // Remove all items one by one
       for (const item of items) {
-        await cartApi.removeItem(cartId!, item.id);
+        await cartApi.removeItem(item.id);
       }
       clearCartStore();
       await refetchCart();
@@ -173,7 +161,7 @@ export const useCart = () => {
     totalPrice,
     totalItems,
     cartId,
-    isLoading: createCartMutation.isPending || addItemMutation.isPending,
+    isLoading: addItemMutation.isPending,
     addItem,
     updateQuantity,
     removeItem,
